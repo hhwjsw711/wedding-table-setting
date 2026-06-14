@@ -134,6 +134,28 @@ export function App() {
     setNewGuest({ name: "", group: newGuest.group, dietary: "" });
   }
 
+  function createGuestForSeat(name: string, seatId: string) {
+    const trimmedName = name.trim();
+    if (!trimmedName) return;
+
+    const guest: Guest = {
+      id: createId("guest"),
+      name: trimmedName,
+      group: "",
+      dietary: "",
+    };
+
+    setState((current) => ({
+      ...current,
+      guests: [...current.guests, guest],
+      assignments: {
+        ...current.assignments,
+        [seatId]: guest.id,
+      },
+    }));
+    setSeatModal(null);
+  }
+
   function importGuestsFromCsv() {
     const imported = parseGuestsCsv(csvText);
     if (imported.length === 0) return;
@@ -442,6 +464,7 @@ export function App() {
           onAssignGuest={assignGuestToSeat}
           onClearSeat={clearSeat}
           onClose={() => setSeatModal(null)}
+          onCreateGuest={createGuestForSeat}
           onEditGuest={openGuestEditor}
           onQueryChange={(query) => setSeatModal((current) => (current ? { ...current, query } : current))}
           seat={modalSeat}

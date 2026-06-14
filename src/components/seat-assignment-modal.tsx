@@ -1,4 +1,4 @@
-import { Pencil } from "lucide-react";
+import { Pencil, Plus } from "lucide-react";
 
 import { DietaryBadges } from "@/components/dietary-badges";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ export function SeatAssignmentModal({
   onAssignGuest,
   onClearSeat,
   onClose,
+  onCreateGuest,
   onEditGuest,
   onQueryChange,
   seat,
@@ -31,6 +32,7 @@ export function SeatAssignmentModal({
   onAssignGuest: (guestId: string, seatId: string) => void;
   onClearSeat: (seatId: string) => void;
   onClose: () => void;
+  onCreateGuest: (name: string, seatId: string) => void;
   onEditGuest: (guest: Guest) => void;
   onQueryChange: (query: string) => void;
   seat: Seat;
@@ -40,11 +42,12 @@ export function SeatAssignmentModal({
   table?: WeddingTable;
   tables: WeddingTable[];
 }) {
+  const query = seatModal.query.trim();
   const modalGuests = guests
     .filter((guest) => {
-      const query = seatModal.query.trim().toLowerCase();
-      if (!query) return true;
-      return [guest.name, guest.group, guest.dietary].some((value) => value.toLowerCase().includes(query));
+      const normalizedQuery = query.toLowerCase();
+      if (!normalizedQuery) return true;
+      return [guest.name, guest.group, guest.dietary].some((value) => value.toLowerCase().includes(normalizedQuery));
     })
     .sort((a, b) => Number(seatedGuestIds.has(a.id)) - Number(seatedGuestIds.has(b.id)) || a.name.localeCompare(b.name));
 
@@ -122,6 +125,15 @@ export function SeatAssignmentModal({
               </Button>
             );
           })}
+          {modalGuests.length === 0 && query ? (
+            <div className="grid gap-2 rounded-lg border border-dashed border-border bg-accent p-3">
+              <p className="m-0 text-sm text-muted-foreground">No guests found.</p>
+              <Button className="w-full justify-start" type="button" onClick={() => onCreateGuest(query, seat.id)}>
+                <Plus aria-hidden="true" />
+                Create "{query}"
+              </Button>
+            </div>
+          ) : null}
         </div>
       </DialogContent>
     </Dialog>
