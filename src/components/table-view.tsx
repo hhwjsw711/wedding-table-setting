@@ -31,6 +31,7 @@ export function TableView({
   const leftSeats = seats.filter((seat) => seat.side === "left");
   const rightSeats = seats.filter((seat) => seat.side === "right");
   const bottomSeats = seats.filter((seat) => seat.side === "bottom");
+  const tableName = table.name.trim() || "Table";
 
   return (
     <article className="min-h-0 rounded-lg border border-border bg-background/90 p-4 shadow-xl transition-all hover:border-input hover:shadow-2xl">
@@ -58,8 +59,8 @@ export function TableView({
       </div>
       {table.shape === "round" ? (
         <div className="relative mx-auto aspect-square min-h-72 max-w-md max-sm:min-h-64">
-          <div className="absolute top-1/2 left-1/2 flex h-3/5 w-3/5 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-primary/30 bg-primary-muted font-extrabold text-primary">
-            Round
+          <div className="absolute top-1/2 left-1/2 flex h-3/5 w-3/5 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-primary/30 bg-primary-muted px-4 text-center font-extrabold text-primary">
+            <span className="max-w-full overflow-hidden text-wrap break-words">{tableName}</span>
           </div>
           {seats.map((seat, index) => (
             <SeatButton
@@ -105,8 +106,8 @@ export function TableView({
                 />
               ))}
             </div>
-            <div className="flex min-h-44 items-center justify-center rounded-lg border border-input bg-table-surface font-extrabold text-secondary-foreground">
-              Table
+            <div className="flex min-h-44 items-center justify-center rounded-lg border border-input bg-table-surface px-4 text-center font-extrabold text-secondary-foreground">
+              <span className="max-w-full overflow-hidden text-wrap break-words">{tableName}</span>
             </div>
             <div className="grid content-center justify-items-center gap-2">
               {rightSeats.map((seat) => (

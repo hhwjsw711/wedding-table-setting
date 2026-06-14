@@ -445,10 +445,10 @@ export function App() {
         </Sidebar>
 
         <SidebarInset className="max-h-screen overflow-auto bg-canvas p-4 lg:p-5 max-lg:max-h-none md:peer-data-[collapsible=offcanvas]:ml-0">
-          <div className="mb-5 flex items-start gap-3">
+          <div className="mb-5 flex items-start justify-center gap-3">
             <FloatingSidebarTrigger />
             <div
-              className="grid max-w-3xl flex-auto grid-cols-4 items-stretch overflow-hidden rounded-lg border border-border bg-background/80 max-md:max-w-none max-sm:grid-cols-2"
+              className="grid w-full max-w-3xl grid-cols-4 items-stretch overflow-hidden rounded-lg border border-border bg-background/80 max-md:max-w-none max-sm:grid-cols-2"
               aria-label="Plan status"
             >
               <Stat label="Tables" value={state.tables.length} />
