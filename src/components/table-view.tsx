@@ -91,8 +91,8 @@ export function TableView({
               ))}
             </div>
           )}
-          <div className="grid min-h-0 grid-cols-5 items-stretch gap-3 max-sm:gap-2">
-            <div className="col-span-1 grid content-center gap-2">
+          <div className="grid min-h-0 grid-cols-[5rem_minmax(14rem,1fr)_5rem] items-stretch gap-3 max-sm:grid-cols-[4rem_minmax(10rem,1fr)_4rem] max-sm:gap-2">
+            <div className="grid content-center justify-items-center gap-2">
               {leftSeats.map((seat) => (
                 <SeatButton
                   assignment={assignments[seat.id]}
@@ -105,10 +105,10 @@ export function TableView({
                 />
               ))}
             </div>
-            <div className="col-span-3 flex min-h-44 items-center justify-center rounded-lg border border-input bg-table-surface font-extrabold text-secondary-foreground">
+            <div className="flex min-h-44 items-center justify-center rounded-lg border border-input bg-table-surface font-extrabold text-secondary-foreground">
               Table
             </div>
-            <div className="col-span-1 grid content-center gap-2">
+            <div className="grid content-center justify-items-center gap-2">
               {rightSeats.map((seat) => (
                 <SeatButton
                   assignment={assignments[seat.id]}

@@ -1,4 +1,4 @@
-import { ChangeEvent, DragEvent, FormEvent, useEffect, useMemo, useState } from "react";
+import { type CSSProperties, ChangeEvent, DragEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import { Plus } from "lucide-react";
 
 import { GuestChip } from "@/components/guest-chip";
@@ -10,6 +10,17 @@ import { TableView } from "@/components/table-view";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarHeader,
+  SidebarInset,
+  SidebarProvider,
+  SidebarRail,
+  SidebarTrigger,
+  useSidebar,
+} from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
 import { STATE_QUERY_KEY, starterState } from "@/planner/constants";
 import type { Guest, GuestEditModalState, NewGuestForm, PlannerState, SeatModalState, WeddingTable } from "@/planner/types";
@@ -314,121 +325,130 @@ export function App() {
 
   return (
     <div className="min-h-screen min-w-80 bg-canvas font-sans text-foreground antialiased">
-      <main className="grid min-h-screen bg-canvas lg:grid-cols-12 max-sm:min-h-auto">
-        <aside className="flex max-h-screen flex-col overflow-auto border-r border-border bg-background lg:col-span-4 xl:col-span-3 max-lg:max-h-none max-lg:border-r-0 max-lg:border-b">
-          <section className="flex-none border-b border-border p-4 sm:p-5">
-            <div className="mb-3.5 flex items-baseline justify-between">
-              <h2 className="m-0 text-sm leading-tight font-semibold">Tables</h2>
-              <span className="text-xs font-semibold text-muted-foreground">{seats.length} seats</span>
+      <SidebarProvider className="bg-canvas" style={{ "--sidebar-width": "24rem" } as CSSProperties}>
+        <Sidebar className="border-border" collapsible="offcanvas">
+          <SidebarHeader className="border-b border-border bg-background p-2">
+            <div className="flex min-h-10 items-center justify-between gap-2 px-2">
+              <div className="min-w-0">
+                <h2 className="m-0 text-sm leading-tight font-semibold">Tables</h2>
+                <span className="text-xs font-semibold text-muted-foreground">{seats.length} seats</span>
+              </div>
+              <SidebarTrigger className="flex-none" />
             </div>
-            <div className="grid gap-2.5">
-              {state.tables.map((table) => (
-                <TableEditor
-                  key={table.id}
-                  isOpen={openTableEditorIds.has(table.id)}
-                  onChange={(patch) => updateTable(table.id, patch)}
-                  onDuplicate={() => duplicateTable(table.id)}
-                  onRemove={() => removeTable(table.id)}
-                  onToggle={(isOpen) =>
-                    setOpenTableEditorIds((current) => {
-                      const next = new Set(current);
-                      if (isOpen) {
-                        next.add(table.id);
-                      } else {
-                        next.delete(table.id);
-                      }
-                      return next;
-                    })
-                  }
-                  canRemove={state.tables.length > 1}
-                  table={table}
+          </SidebarHeader>
+          <SidebarContent className="gap-0 bg-background">
+            <SidebarGroup className="border-b border-border p-4 sm:p-5">
+              <div className="grid gap-2.5">
+                {state.tables.map((table) => (
+                  <TableEditor
+                    key={table.id}
+                    isOpen={openTableEditorIds.has(table.id)}
+                    onChange={(patch) => updateTable(table.id, patch)}
+                    onDuplicate={() => duplicateTable(table.id)}
+                    onRemove={() => removeTable(table.id)}
+                    onToggle={(isOpen) =>
+                      setOpenTableEditorIds((current) => {
+                        const next = new Set(current);
+                        if (isOpen) {
+                          next.add(table.id);
+                        } else {
+                          next.delete(table.id);
+                        }
+                        return next;
+                      })
+                    }
+                    canRemove={state.tables.length > 1}
+                    table={table}
+                  />
+                ))}
+                <Button
+                  className="min-h-10 w-full border-dashed border-input bg-transparent px-3 py-2 font-extrabold text-primary hover:border-primary hover:bg-background"
+                  type="button"
+                  variant="outline"
+                  onClick={addTable}
+                >
+                  <Plus aria-hidden="true" />
+                  Add Table
+                </Button>
+              </div>
+            </SidebarGroup>
+
+            <SidebarGroup className="border-b border-border p-4 sm:p-5">
+              <div className="mb-3.5 flex items-baseline justify-between">
+                <h2 className="m-0 text-sm leading-tight font-semibold">Guests</h2>
+                <span className="text-xs font-semibold text-muted-foreground">
+                  {state.guests.length - unseatedGuests.length}/{state.guests.length} seated
+                </span>
+              </div>
+              <form className="grid gap-2.5" onSubmit={addGuest}>
+                <Input
+                  placeholder="Name"
+                  value={newGuest.name}
+                  onChange={(event) => setNewGuest({ ...newGuest, name: event.target.value })}
                 />
-              ))}
-              <Button
-                className="min-h-10 w-full border-dashed border-input bg-transparent px-3 py-2 font-extrabold text-primary hover:border-primary hover:bg-background"
-                type="button"
-                variant="outline"
-                onClick={addTable}
-              >
-                <Plus aria-hidden="true" />
-                Add Table
+                <Input
+                  placeholder="Group"
+                  list="guest-groups"
+                  value={newGuest.group}
+                  onChange={(event) => setNewGuest({ ...newGuest, group: event.target.value })}
+                />
+                <Input
+                  placeholder="Dietary"
+                  value={newGuest.dietary}
+                  onChange={(event) => setNewGuest({ ...newGuest, dietary: event.target.value })}
+                />
+                <Button type="submit">Add Guest</Button>
+              </form>
+              <datalist id="guest-groups">
+                {groups.map((group) => (
+                  <option key={group} value={group} />
+                ))}
+              </datalist>
+              <div className="mt-3 grid gap-2.5 border-t border-border pt-3">
+                <Label className="relative inline-flex min-h-9 cursor-pointer items-center justify-center overflow-hidden rounded-md border border-border bg-background text-sm font-bold transition-colors hover:border-primary hover:text-primary">
+                  <Input className="absolute inset-0 h-full opacity-0" accept=".csv,text/csv" type="file" onChange={handleCsvFile} />
+                  Choose CSV
+                </Label>
+                <Textarea
+                  className="min-h-24 resize-y"
+                  rows={4}
+                  placeholder="name,group,dietary&#10;Alice Smith,Family,Vegetarian"
+                  value={csvText}
+                  onChange={(event) => setCsvText(event.target.value)}
+                />
+                <Button className="w-full" type="button" onClick={importGuestsFromCsv}>
+                  Import Guests
+                </Button>
+              </div>
+            </SidebarGroup>
+
+            <SidebarGroup className="min-h-56 p-4 sm:p-5">
+              <div className="mb-3.5 flex items-baseline justify-between">
+                <h2 className="m-0 text-sm leading-tight font-semibold">Unseated</h2>
+                <span className="text-xs font-semibold text-muted-foreground">{unseatedGuests.length}</span>
+              </div>
+              <Button className="mb-3 w-full" type="button" onClick={autoSeatByGroup} disabled={unseatedGuests.length === 0}>
+                Seat by Group
               </Button>
-            </div>
-          </section>
+              <div className="grid max-h-96 flex-auto gap-2.5 overflow-auto pr-1">
+                {unseatedGuests.length === 0 ? (
+                  <p className="m-0 text-sm text-muted-foreground">All guests have seats.</p>
+                ) : (
+                  unseatedGuests.map((guest) => (
+                    <GuestChip key={guest.id} guest={guest} onEdit={openGuestEditor} onRemove={removeGuest} />
+                  ))
+                )}
+              </div>
+            </SidebarGroup>
+          </SidebarContent>
+          <SidebarRail />
+        </Sidebar>
 
-          <section className="flex-none border-b border-border p-4 sm:p-5">
-            <div className="mb-3.5 flex items-baseline justify-between">
-              <h2 className="m-0 text-sm leading-tight font-semibold">Guests</h2>
-              <span className="text-xs font-semibold text-muted-foreground">
-                {state.guests.length - unseatedGuests.length}/{state.guests.length} seated
-              </span>
-            </div>
-            <form className="grid gap-2.5" onSubmit={addGuest}>
-              <Input
-                placeholder="Name"
-                value={newGuest.name}
-                onChange={(event) => setNewGuest({ ...newGuest, name: event.target.value })}
-              />
-              <Input
-                placeholder="Group"
-                list="guest-groups"
-                value={newGuest.group}
-                onChange={(event) => setNewGuest({ ...newGuest, group: event.target.value })}
-              />
-              <Input
-                placeholder="Dietary"
-                value={newGuest.dietary}
-                onChange={(event) => setNewGuest({ ...newGuest, dietary: event.target.value })}
-              />
-              <Button type="submit">Add Guest</Button>
-            </form>
-            <datalist id="guest-groups">
-              {groups.map((group) => (
-                <option key={group} value={group} />
-              ))}
-            </datalist>
-            <div className="mt-3 grid gap-2.5 border-t border-border pt-3">
-              <Label className="relative inline-flex min-h-9 cursor-pointer items-center justify-center overflow-hidden rounded-md border border-border bg-background text-sm font-bold transition-colors hover:border-primary hover:text-primary">
-                <Input className="absolute inset-0 h-full opacity-0" accept=".csv,text/csv" type="file" onChange={handleCsvFile} />
-                Choose CSV
-              </Label>
-              <Textarea
-                className="min-h-24 resize-y"
-                rows={4}
-                placeholder="name,group,dietary&#10;Alice Smith,Family,Vegetarian"
-                value={csvText}
-                onChange={(event) => setCsvText(event.target.value)}
-              />
-              <Button className="w-full" type="button" onClick={importGuestsFromCsv}>
-                Import Guests
-              </Button>
-            </div>
-          </section>
-
-          <section className="flex max-h-screen min-h-56 flex-none flex-col p-4 sm:p-5 max-lg:max-h-none">
-            <div className="mb-3.5 flex items-baseline justify-between">
-              <h2 className="m-0 text-sm leading-tight font-semibold">Unseated</h2>
-              <span className="text-xs font-semibold text-muted-foreground">{unseatedGuests.length}</span>
-            </div>
-            <Button className="mb-3 w-full" type="button" onClick={autoSeatByGroup} disabled={unseatedGuests.length === 0}>
-              Seat by Group
-            </Button>
-            <div className="grid max-h-96 flex-auto gap-2.5 overflow-auto pr-1">
-              {unseatedGuests.length === 0 ? (
-                <p className="m-0 text-sm text-muted-foreground">All guests have seats.</p>
-              ) : (
-                unseatedGuests.map((guest) => (
-                  <GuestChip key={guest.id} guest={guest} onEdit={openGuestEditor} onRemove={removeGuest} />
-                ))
-              )}
-            </div>
-          </section>
-        </aside>
-
-        <section className="max-h-screen overflow-auto p-4 lg:col-span-8 lg:p-5 xl:col-span-9 max-lg:max-h-none">
-          <div className="mb-5">
+        <SidebarInset className="max-h-screen overflow-auto bg-canvas p-4 lg:p-5 max-lg:max-h-none md:peer-data-[collapsible=offcanvas]:ml-0">
+          <div className="mb-5 flex items-start gap-3">
+            <FloatingSidebarTrigger />
             <div
-              className="grid max-w-3xl grid-cols-4 items-stretch overflow-hidden rounded-lg border border-border bg-background/80 max-md:max-w-none max-sm:grid-cols-2"
+              className="grid max-w-3xl flex-auto grid-cols-4 items-stretch overflow-hidden rounded-lg border border-border bg-background/80 max-md:max-w-none max-sm:grid-cols-2"
               aria-label="Plan status"
             >
               <Stat label="Tables" value={state.tables.length} />
@@ -453,8 +473,8 @@ export function App() {
               />
             ))}
           </div>
-        </section>
-      </main>
+        </SidebarInset>
+      </SidebarProvider>
 
       {seatModal && modalSeat && (
         <SeatAssignmentModal
@@ -486,6 +506,13 @@ export function App() {
       )}
     </div>
   );
+}
+
+function FloatingSidebarTrigger() {
+  const { isMobile, open, openMobile } = useSidebar();
+  if (isMobile ? openMobile : open) return null;
+
+  return <SidebarTrigger className="sticky top-4 z-30 flex-none bg-background shadow-sm md:fixed md:top-4 md:left-4" />;
 }
 
 function createDuplicateTableName(name: string, tables: WeddingTable[]) {
