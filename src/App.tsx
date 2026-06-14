@@ -620,24 +620,14 @@ export function App() {
                 const seatedSeat = seatedAt ? seatById.get(seatedAt) : undefined;
                 const seatedTable = seatedSeat ? state.tables.find((table) => table.id === seatedSeat.tableId) : undefined;
                 return (
-                  <div className="guest-option" key={guest.id}>
-                    <button className="guest-option-main" type="button" onClick={() => assignGuestToSeat(guest.id, modalSeat.id)}>
-                      <span>
-                        {guest.name}
-                        {guest.group ? <small>{guest.group}</small> : null}
-                      </span>
-                      <DietaryBadges dietary={guest.dietary} />
-                      <em>{seatedSeat ? `${seatedTable?.name}, ${seatedSeat.label}` : "Unseated"}</em>
-                    </button>
-                    <button
-                      className="guest-option-edit"
-                      type="button"
-                      aria-label={`Edit ${guest.name}`}
-                      onClick={() => openGuestEditor(guest)}
-                    >
-                      Edit
-                    </button>
-                  </div>
+                  <button className="guest-option" key={guest.id} type="button" onClick={() => assignGuestToSeat(guest.id, modalSeat.id)}>
+                    <span>
+                      {guest.name}
+                      {guest.group ? <small>{guest.group}</small> : null}
+                    </span>
+                    <DietaryBadges dietary={guest.dietary} />
+                    <em>{seatedSeat ? `${seatedTable?.name}, ${seatedSeat.label}` : "Unseated"}</em>
+                  </button>
                 );
               })}
             </div>
