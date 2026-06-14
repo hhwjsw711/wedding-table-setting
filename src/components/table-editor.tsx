@@ -47,7 +47,7 @@ export function TableEditor({
             type="button"
             variant="ghost"
           >
-            <Copy aria-hidden="true" />
+            <Copy aria-hidden="true" className="size-3.5" />
           </Button>
           <Button
             aria-label={`Remove ${table.name}`}
@@ -62,7 +62,7 @@ export function TableEditor({
             type="button"
             variant="ghost"
           >
-            <X aria-hidden="true" />
+            <X aria-hidden="true" className="size-3.5" />
           </Button>
         </div>
       </summary>
