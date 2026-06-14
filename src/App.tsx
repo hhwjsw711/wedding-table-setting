@@ -299,15 +299,15 @@ export function App() {
   const modalAssignedGuest = modalSeat ? guestById.get(state.assignments[modalSeat.id]) : undefined;
 
   return (
-    <div className="min-h-screen min-w-80 bg-[#f0ede4] font-sans text-[#211f1a] antialiased">
-      <main className="grid min-h-screen grid-cols-[minmax(320px,372px)_1fr] bg-[#f0ede4] max-[980px]:grid-cols-1 max-sm:min-h-auto">
-        <aside className="flex max-h-screen flex-col overflow-auto border-r border-[#d8d1c2] bg-[#fffdfa] max-[980px]:max-h-none max-[980px]:border-r-0 max-[980px]:border-b">
-          <section className="flex-none border-b border-[#d8d1c2] px-[18px] pt-[18px] pb-5 max-sm:px-3.5 max-sm:py-4">
+    <div className="min-h-screen min-w-80 bg-canvas font-sans text-foreground antialiased">
+      <main className="grid min-h-screen bg-canvas lg:grid-cols-12 max-sm:min-h-auto">
+        <aside className="flex max-h-screen flex-col overflow-auto border-r border-border bg-background lg:col-span-4 xl:col-span-3 max-lg:max-h-none max-lg:border-r-0 max-lg:border-b">
+          <section className="flex-none border-b border-border p-4 sm:p-5">
             <div className="mb-3.5 flex items-baseline justify-between">
-              <h2 className="m-0 text-[15px] leading-tight font-semibold">Tables</h2>
-              <span className="text-xs font-semibold text-[#6f6a60]">{seats.length} seats</span>
+              <h2 className="m-0 text-sm leading-tight font-semibold">Tables</h2>
+              <span className="text-xs font-semibold text-muted-foreground">{seats.length} seats</span>
             </div>
-            <div className="grid gap-[9px]">
+            <div className="grid gap-2.5">
               {state.tables.map((table) => (
                 <TableEditor
                   key={table.id}
@@ -330,7 +330,7 @@ export function App() {
                 />
               ))}
               <Button
-                className="min-h-10 w-full border-dashed border-[#c7bda9] bg-transparent px-3 py-[9px] font-[820] text-[#2b7567] hover:border-[#2b7567] hover:bg-white"
+                className="min-h-10 w-full border-dashed border-input bg-transparent px-3 py-2 font-extrabold text-primary hover:border-primary hover:bg-background"
                 type="button"
                 variant="outline"
                 onClick={addTable}
@@ -341,14 +341,14 @@ export function App() {
             </div>
           </section>
 
-          <section className="flex-none border-b border-[#d8d1c2] px-[18px] pt-[18px] pb-5 max-sm:px-3.5 max-sm:py-4">
+          <section className="flex-none border-b border-border p-4 sm:p-5">
             <div className="mb-3.5 flex items-baseline justify-between">
-              <h2 className="m-0 text-[15px] leading-tight font-semibold">Guests</h2>
-              <span className="text-xs font-semibold text-[#6f6a60]">
+              <h2 className="m-0 text-sm leading-tight font-semibold">Guests</h2>
+              <span className="text-xs font-semibold text-muted-foreground">
                 {state.guests.length - unseatedGuests.length}/{state.guests.length} seated
               </span>
             </div>
-            <form className="grid gap-[9px]" onSubmit={addGuest}>
+            <form className="grid gap-2.5" onSubmit={addGuest}>
               <Input
                 placeholder="Name"
                 value={newGuest.name}
@@ -372,13 +372,13 @@ export function App() {
                 <option key={group} value={group} />
               ))}
             </datalist>
-            <div className="mt-[13px] grid gap-[9px] border-t border-[#d8d1c2] pt-[13px]">
-              <Label className="relative inline-flex min-h-9 cursor-pointer items-center justify-center overflow-hidden rounded-md border border-[#d8d1c2] bg-white text-sm font-[760] transition-colors hover:border-[#2b7567] hover:text-[#2b7567]">
+            <div className="mt-3 grid gap-2.5 border-t border-border pt-3">
+              <Label className="relative inline-flex min-h-9 cursor-pointer items-center justify-center overflow-hidden rounded-md border border-border bg-background text-sm font-bold transition-colors hover:border-primary hover:text-primary">
                 <Input className="absolute inset-0 h-full opacity-0" accept=".csv,text/csv" type="file" onChange={handleCsvFile} />
                 Choose CSV
               </Label>
               <Textarea
-                className="min-h-[92px] resize-y"
+                className="min-h-24 resize-y"
                 rows={4}
                 placeholder="name,group,dietary&#10;Alice Smith,Family,Vegetarian"
                 value={csvText}
@@ -390,17 +390,17 @@ export function App() {
             </div>
           </section>
 
-          <section className="flex max-h-[min(540px,calc(100vh-128px))] min-h-[220px] flex-none flex-col px-[18px] pt-[18px] pb-5 max-[980px]:max-h-none max-sm:px-3.5 max-sm:py-4">
+          <section className="flex max-h-screen min-h-56 flex-none flex-col p-4 sm:p-5 max-lg:max-h-none">
             <div className="mb-3.5 flex items-baseline justify-between">
-              <h2 className="m-0 text-[15px] leading-tight font-semibold">Unseated</h2>
-              <span className="text-xs font-semibold text-[#6f6a60]">{unseatedGuests.length}</span>
+              <h2 className="m-0 text-sm leading-tight font-semibold">Unseated</h2>
+              <span className="text-xs font-semibold text-muted-foreground">{unseatedGuests.length}</span>
             </div>
             <Button className="mb-3 w-full" type="button" onClick={autoSeatByGroup} disabled={unseatedGuests.length === 0}>
               Seat by Group
             </Button>
-            <div className="grid max-h-[380px] flex-[0_1_auto] gap-[9px] overflow-auto pr-1">
+            <div className="grid max-h-96 flex-auto gap-2.5 overflow-auto pr-1">
               {unseatedGuests.length === 0 ? (
-                <p className="m-0 text-sm text-[#6f6a60]">All guests have seats.</p>
+                <p className="m-0 text-sm text-muted-foreground">All guests have seats.</p>
               ) : (
                 unseatedGuests.map((guest) => (
                   <GuestChip key={guest.id} guest={guest} onEdit={openGuestEditor} onRemove={removeGuest} />
@@ -410,10 +410,10 @@ export function App() {
           </section>
         </aside>
 
-        <section className="max-h-screen overflow-auto px-5 pt-[18px] pb-6 max-[980px]:max-h-none max-sm:p-3">
-          <div className="mb-[18px] flex items-center justify-between gap-4 max-[720px]:flex-col max-[720px]:items-stretch">
+        <section className="max-h-screen overflow-auto p-4 lg:col-span-8 lg:p-5 xl:col-span-9 max-lg:max-h-none">
+          <div className="mb-5 flex items-center justify-between gap-4 max-md:flex-col max-md:items-stretch">
             <div
-              className="grid max-w-[760px] flex-auto grid-cols-4 items-stretch overflow-hidden rounded-[9px] border border-[#d8d1c2] bg-[#fffdfa]/80 max-[720px]:max-w-none max-sm:grid-cols-2"
+              className="grid max-w-3xl flex-auto grid-cols-4 items-stretch overflow-hidden rounded-lg border border-border bg-background/80 max-md:max-w-none max-sm:grid-cols-2"
               aria-label="Plan status"
             >
               <Stat label="Tables" value={state.tables.length} />
@@ -421,7 +421,7 @@ export function App() {
               <Stat label="Guests" value={state.guests.length} />
               <Stat label="Open" value={Math.max(0, seats.length - Object.keys(state.assignments).length)} />
             </div>
-            <div className="flex flex-none justify-end gap-[9px] max-[720px]:w-full">
+            <div className="flex flex-none justify-end gap-2.5 max-md:w-full">
               <Button className="flex-1 sm:flex-none" type="button" variant="secondary" onClick={exportCsv}>
                 <Download aria-hidden="true" />
                 Export CSV
@@ -433,7 +433,7 @@ export function App() {
             </div>
           </div>
 
-          <div className="grid items-start gap-[18px] [grid-template-columns:repeat(auto-fill,minmax(340px,1fr))] max-sm:grid-cols-1">
+          <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-2 2xl:grid-cols-3">
             {state.tables.map((table) => (
               <TableView
                 key={table.id}

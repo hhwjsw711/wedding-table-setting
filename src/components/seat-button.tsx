@@ -24,8 +24,8 @@ export function SeatButton({
   return (
     <button
       className={cn(
-        "relative grid h-[58px] w-[86px] min-w-0 flex-[0_0_86px] cursor-pointer grid-rows-[minmax(0,1fr)_auto] items-center justify-items-center gap-[3px] overflow-hidden rounded-lg border border-dashed border-[#b7ac97] bg-white px-1.5 py-1 text-center text-xs leading-[1.12] font-[780] text-[#665e4f] transition-[background,border-color,box-shadow] hover:border-[#2b7567] hover:shadow-[0_0_0_3px_rgba(43,117,103,0.13)] max-sm:w-[74px] max-sm:flex-[0_0_74px]",
-        guest && "border-solid border-[#c99832] bg-[#fff8e8] text-[#332b1c]",
+        "relative flex h-14 w-20 min-w-0 flex-none cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-lg border border-dashed border-input bg-background px-1.5 py-1 text-center text-xs leading-tight font-bold text-muted-foreground transition-all hover:border-primary hover:ring-2 hover:ring-ring/20 max-sm:w-16",
+        guest && "border-solid border-amber-600 bg-seat-filled text-foreground",
         style && "absolute",
       )}
       draggable={Boolean(guest)}
@@ -44,7 +44,7 @@ export function SeatButton({
       {guest ? <DietaryBadges dietary={guest.dietary} compact /> : null}
       {guest && (
         <em
-          className="absolute top-[3px] right-[3px] flex size-4 items-center justify-center rounded-full border border-[#dbc7a0] bg-white text-[10px] not-italic text-[#8b2f20]"
+          className="absolute top-1 right-1 flex size-4 items-center justify-center rounded-full border border-amber-200 bg-background text-xs not-italic text-destructive"
           onClick={(event) => {
             event.stopPropagation();
             onClear(seat.id);

@@ -51,21 +51,21 @@ export function SeatAssignmentModal({
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent
-        className="max-h-[min(760px,calc(100vh-40px))] max-w-[560px] overflow-hidden rounded-[10px] border-0 bg-white p-[18px] shadow-[0_24px_80px_rgba(32,32,29,0.32)]"
+        className="max-h-dvh max-w-xl overflow-hidden rounded-lg border-0 bg-background p-5 shadow-2xl"
         onOpenAutoFocus={(event) => event.preventDefault()}
       >
         <DialogHeader className="flex-row items-center justify-between gap-3 text-left">
           <div>
-            <p className="m-0 text-xs font-bold tracking-normal text-[#6f6a60] uppercase">{table?.name}</p>
-            <DialogTitle className="m-0 text-[15px] leading-tight">{seat.label}</DialogTitle>
+            <p className="m-0 text-xs font-bold tracking-normal text-muted-foreground uppercase">{table?.name}</p>
+            <DialogTitle className="m-0 text-sm leading-tight">{seat.label}</DialogTitle>
           </div>
         </DialogHeader>
         {assignedGuest && (
-          <div className="mt-3.5 flex items-center justify-between gap-3 rounded-lg border border-[#dbc7a0] bg-[#fff8e8] p-2.5 max-sm:flex-col max-sm:items-stretch">
+          <div className="mt-3.5 flex items-center justify-between gap-3 rounded-lg border border-amber-200 bg-seat-filled p-2.5 max-sm:flex-col max-sm:items-stretch">
             <span className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
               {assignedGuest.name}
               {assignedGuest.group ? (
-                <small className="block overflow-hidden text-xs leading-tight text-ellipsis text-[#6f6a60]">
+                <small className="block overflow-hidden text-xs leading-tight text-ellipsis text-muted-foreground">
                   {assignedGuest.group}
                 </small>
               ) : null}
@@ -95,7 +95,7 @@ export function SeatAssignmentModal({
           value={seatModal.query}
           onChange={(event) => onQueryChange(event.target.value)}
         />
-        <div className="grid max-h-[430px] gap-2 overflow-auto pr-1">
+        <div className="grid max-h-96 gap-2 overflow-auto pr-1">
           {modalGuests.map((guest) => {
             const seatedAt = findSeatForGuest(assignments, guest.id);
             const seatedSeat = seatedAt ? seatById.get(seatedAt) : undefined;
@@ -103,17 +103,19 @@ export function SeatAssignmentModal({
             return (
               <Button
                 asChild
-                className="grid min-h-[50px] grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2.5 rounded-lg border border-[#d8d1c2] bg-[#f7f4ed] px-[11px] py-[9px] text-left text-[#211f1a] hover:border-[#2b7567] hover:bg-white max-sm:grid-cols-1"
+                className="grid min-h-12 grid-cols-12 items-center gap-2.5 rounded-lg border border-border bg-accent px-3 py-2.5 text-left text-foreground hover:border-primary hover:bg-background max-sm:grid-cols-1"
                 key={guest.id}
                 variant="ghost"
               >
                 <button type="button" onClick={() => onAssignGuest(guest.id, seat.id)}>
-                  <span className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
+                  <span className="col-span-5 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
                     {guest.name}
-                    {guest.group ? <small className="block overflow-hidden text-xs leading-tight text-ellipsis text-[#6f6a60]">{guest.group}</small> : null}
+                    {guest.group ? <small className="block overflow-hidden text-xs leading-tight text-ellipsis text-muted-foreground">{guest.group}</small> : null}
                   </span>
-                  <DietaryBadges dietary={guest.dietary} />
-                  <em className="text-xs not-italic whitespace-nowrap text-[#2b7567] max-sm:whitespace-normal">
+                  <div className="col-span-4 justify-self-end">
+                    <DietaryBadges dietary={guest.dietary} />
+                  </div>
+                  <em className="col-span-3 text-xs not-italic whitespace-nowrap text-primary max-sm:whitespace-normal">
                     {seatedSeat ? `${seatedTable?.name}, ${seatedSeat.label}` : "Unseated"}
                   </em>
                 </button>

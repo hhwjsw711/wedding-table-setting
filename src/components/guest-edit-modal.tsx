@@ -22,33 +22,33 @@ export function GuestEditModal({
 }) {
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-h-[min(760px,calc(100vh-40px))] max-w-[480px] overflow-hidden rounded-[10px] border-0 bg-white p-[18px] shadow-[0_24px_80px_rgba(32,32,29,0.32)]">
+      <DialogContent className="max-h-dvh max-w-lg overflow-hidden rounded-lg border-0 bg-background p-5 shadow-2xl">
         <form onSubmit={onSave}>
           <DialogHeader className="flex-row items-center justify-between gap-3 text-left">
             <div>
-              <p className="m-0 text-xs font-bold tracking-normal text-[#6f6a60] uppercase">Guest details</p>
-              <DialogTitle className="m-0 text-[15px] leading-tight">Edit guest</DialogTitle>
+              <p className="m-0 text-xs font-bold tracking-normal text-muted-foreground uppercase">Guest details</p>
+              <DialogTitle className="m-0 text-sm leading-tight">Edit guest</DialogTitle>
             </div>
           </DialogHeader>
           <div className="mt-4 grid gap-3">
             <Label className="grid gap-1.5">
-              <span className="text-xs font-bold text-[#504b42]">Name</span>
+              <span className="text-xs font-bold text-foreground/80">Name</span>
               <Input autoFocus value={guestModal.name} onChange={(event) => onChange({ ...guestModal, name: event.target.value })} />
             </Label>
             <Label className="grid gap-1.5">
-              <span className="text-xs font-bold text-[#504b42]">Group</span>
+              <span className="text-xs font-bold text-foreground/80">Group</span>
               <Input list="guest-groups" value={guestModal.group} onChange={(event) => onChange({ ...guestModal, group: event.target.value })} />
             </Label>
             <Label className="grid gap-1.5">
-              <span className="text-xs font-bold text-[#504b42]">Dietary restrictions</span>
+              <span className="text-xs font-bold text-foreground/80">Dietary restrictions</span>
               <Textarea
-                className="min-h-[92px] resize-y"
+                className="min-h-24 resize-y"
                 value={guestModal.dietary}
                 onChange={(event) => onChange({ ...guestModal, dietary: event.target.value })}
               />
             </Label>
           </div>
-          <DialogFooter className="mt-[18px] flex justify-end gap-2.5 max-sm:w-full max-sm:flex-row">
+          <DialogFooter className="mt-5 flex justify-end gap-2.5 max-sm:w-full max-sm:flex-row">
             <Button className="max-sm:flex-1" type="button" variant="secondary" onClick={onClose}>
               Cancel
             </Button>
