@@ -80,7 +80,6 @@ export function App() {
   const [seatModal, setSeatModal] = useState<SeatModalState>(null);
   const [csvText, setCsvText] = useState("");
   const [newGuest, setNewGuest] = useState<NewGuestForm>({ name: "", group: "", notes: "" });
-  const [tableCountInput, setTableCountInput] = useState(String(state.tables.length));
   const [openTableEditorIds, setOpenTableEditorIds] = useState<Set<string>>(() =>
     new Set(state.tables[0] ? [state.tables[0].id] : []),
   );
@@ -120,19 +119,36 @@ export function App() {
     );
   }
 
-  function setTableCount(count: number) {
-    const nextCount = clamp(Math.floor(count), 1, 40);
-    setTableCountInput(String(nextCount));
+  function addTable() {
+    const table = createDefaultTable(state.tables.length + 1);
     setState((current) => {
-      const tables = [...current.tables];
-      if (tables.length < nextCount) {
-        for (let index = tables.length; index < nextCount; index += 1) {
-          tables.push(createDefaultTable(index + 1));
-        }
-      } else {
-        tables.length = nextCount;
+      return { ...current, tables: [...current.tables, table] };
+    });
+    setOpenTableEditorIds((current) => new Set([...current, table.id]));
+  }
+
+  function removeTable(tableId: string) {
+    setState((current) => {
+      if (current.tables.length <= 1) return current;
+      const table = current.tables.find((item) => item.id === tableId);
+      if (!table) return current;
+
+      const removedSeatIds = new Set(createSeatsForTable(table).map((seat) => seat.id));
+      const assignments = { ...current.assignments };
+      for (const seatId of removedSeatIds) {
+        delete assignments[seatId];
       }
-      return sanitizeAssignments({ ...current, tables });
+
+      return {
+        ...current,
+        assignments,
+        tables: current.tables.filter((item) => item.id !== tableId),
+      };
+    });
+    setOpenTableEditorIds((current) => {
+      const next = new Set(current);
+      next.delete(tableId);
+      return next;
     });
   }
 
@@ -267,7 +283,7 @@ export function App() {
     if (!window.confirm("Reset the planner and clear guests, tables, and assignments?")) return;
     setState(starterState);
     setSeatModal(null);
-    setTableCountInput(String(starterState.tables.length));
+    setOpenTableEditorIds(new Set(starterState.tables[0] ? [starterState.tables[0].id] : []));
   }
 
   function exportCsv() {
@@ -307,21 +323,6 @@ export function App() {
 
   return (
     <div className="app-shell">
-      <header className="app-header">
-        <div>
-          <p className="eyebrow">Wedding Seating Planner</p>
-          <h1>Build the room, import guests, assign every seat.</h1>
-        </div>
-        <div className="header-actions">
-          <button className="button secondary" type="button" onClick={exportCsv}>
-            Export CSV
-          </button>
-          <button className="button danger" type="button" onClick={resetPlanner}>
-            Reset
-          </button>
-        </div>
-      </header>
-
       <main className="workspace">
         <aside className="sidebar">
           <section className="panel">
@@ -329,28 +330,13 @@ export function App() {
               <h2>Tables</h2>
               <span>{seats.length} seats</span>
             </div>
-            <label className="field">
-              <span>Number of tables</span>
-              <div className="inline-control">
-                <input
-                  min={1}
-                  max={40}
-                  type="number"
-                  value={tableCountInput}
-                  onChange={(event) => setTableCountInput(event.target.value)}
-                  onBlur={() => setTableCount(Number(tableCountInput) || 1)}
-                />
-                <button className="button secondary" type="button" onClick={() => setTableCount(Number(tableCountInput) || 1)}>
-                  Apply
-                </button>
-              </div>
-            </label>
             <div className="table-editor-list">
               {state.tables.map((table) => (
                 <TableEditor
                   key={table.id}
                   isOpen={openTableEditorIds.has(table.id)}
                   onChange={(patch) => updateTable(table.id, patch)}
+                  onRemove={() => removeTable(table.id)}
                   onToggle={(isOpen) =>
                     setOpenTableEditorIds((current) => {
                       const next = new Set(current);
@@ -362,9 +348,13 @@ export function App() {
                       return next;
                     })
                   }
+                  canRemove={state.tables.length > 1}
                   table={table}
                 />
               ))}
+              <button className="add-table-button" type="button" onClick={addTable}>
+                + Add Table
+              </button>
             </div>
           </section>
 
@@ -437,6 +427,14 @@ export function App() {
         </aside>
 
         <section className="canvas">
+          <div className="canvas-actions">
+            <button className="button secondary" type="button" onClick={exportCsv}>
+              Export CSV
+            </button>
+            <button className="button danger" type="button" onClick={resetPlanner}>
+              Reset
+            </button>
+          </div>
           <div className="stats-row">
             <Stat label="Tables" value={state.tables.length} />
             <Stat label="Seats" value={seats.length} />
@@ -516,13 +514,17 @@ export function App() {
 }
 
 function TableEditor({
+  canRemove,
   isOpen,
   onChange,
+  onRemove,
   onToggle,
   table,
 }: {
+  canRemove: boolean;
   isOpen: boolean;
   onChange: (patch: Partial<WeddingTable>) => void;
+  onRemove: () => void;
   onToggle: (isOpen: boolean) => void;
   table: WeddingTable;
 }) {
@@ -530,7 +532,22 @@ function TableEditor({
     <details className="table-editor" open={isOpen} onToggle={(event) => onToggle(event.currentTarget.open)}>
       <summary>
         <span>{table.name}</span>
-        <em>{createSeatsForTable(table).length} seats</em>
+        <div className="table-summary-actions">
+          <em>{createSeatsForTable(table).length} seats</em>
+          <button
+            aria-label={`Remove ${table.name}`}
+            className="remove-table-button"
+            disabled={!canRemove}
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              onRemove();
+            }}
+            type="button"
+          >
+            x
+          </button>
+        </div>
       </summary>
       <div className="editor-fields">
         <label className="field">
