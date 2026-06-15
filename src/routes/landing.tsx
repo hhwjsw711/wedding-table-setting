@@ -26,11 +26,18 @@ export function LandingPage() {
 
         {/* ============ Hero ============ */}
         <header className="relative overflow-hidden rounded-xl border border-border mb-16 sm:mb-20">
-          <img
-            alt=""
-            className="absolute inset-0 size-full object-cover opacity-30"
-            src="/gallery/hero-1.png"
-          />
+            <picture>
+              <source srcSet="/gallery/hero-1.webp" type="image/webp" />
+              <img
+                alt=""
+                className="absolute inset-0 size-full object-cover opacity-30"
+                decoding="async"
+                fetchPriority="high"
+                height="800"
+                src="/gallery/hero-1.png"
+                width="1200"
+              />
+            </picture>
           <div className="relative px-8 pb-12 pt-16 sm:pb-14 sm:pt-24 md:pt-32">
             <p className="mb-6 text-xs font-medium tracking-widest uppercase text-primary">
               {L.heroEyebrow}
@@ -66,12 +73,19 @@ export function LandingPage() {
                 key={i}
                 className="group relative overflow-hidden rounded-lg border border-border bg-background transition hover:shadow-lg"
               >
-                <img
-                  alt={img.label}
-                  className="aspect-[4/3] w-full object-cover transition duration-300 group-hover:scale-105"
-                  loading="lazy"
-                  src={img.src}
-                />
+                <picture>
+                  <source srcSet={img.webp} type="image/webp" />
+                  <img
+                    alt={img.label}
+                    className="aspect-[4/3] w-full object-cover transition duration-300 group-hover:scale-105"
+                    decoding="async"
+                    height="600"
+                    loading="lazy"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    src={img.src}
+                    width="800"
+                  />
+                </picture>
               </div>
             ))}
           </div>
@@ -173,12 +187,12 @@ export function LandingPage() {
 }
 
 const galleryImages = [
-  { src: "/gallery/round-1.jpg", label: "圆桌宴会布置" },
-  { src: "/gallery/round-2.jpg", label: "圆桌宴会布置" },
-  { src: "/gallery/round-3.jpg", label: "圆桌宴会布置" },
-  { src: "/gallery/round-4.jpg", label: "圆桌宴会布置" },
-  { src: "/gallery/round-5.jpg", label: "圆桌宴会布置" },
-  { src: "/gallery/round-6.jpg", label: "圆桌宴会布置" },
-  { src: "/gallery/round-7.jpg", label: "圆桌宴会布置" },
-  { src: "/gallery/round-8.jpg", label: "圆桌宴会布置" },
+  { src: "/gallery/round-1.jpg", webp: "/gallery/round-1.webp", label: "圆桌宴会布置" },
+  { src: "/gallery/round-2.jpg", webp: "/gallery/round-2.webp", label: "圆桌宴会布置" },
+  { src: "/gallery/round-3.jpg", webp: "/gallery/round-3.webp", label: "圆桌宴会布置" },
+  { src: "/gallery/round-4.jpg", webp: "/gallery/round-4.webp", label: "圆桌宴会布置" },
+  { src: "/gallery/round-5.jpg", webp: "/gallery/round-5.webp", label: "圆桌宴会布置" },
+  { src: "/gallery/round-6.jpg", webp: "/gallery/round-6.webp", label: "圆桌宴会布置" },
+  { src: "/gallery/round-7.jpg", webp: "/gallery/round-7.webp", label: "圆桌宴会布置" },
+  { src: "/gallery/round-8.jpg", webp: "/gallery/round-8.webp", label: "圆桌宴会布置" },
 ];
