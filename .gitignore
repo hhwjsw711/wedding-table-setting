@@ -5,3 +5,8 @@ dist
 .DS_Store
 coverage/
 *.tsbuildinfo
+.agents/
+.claude/
+skills-lock.json
+convex/_generated/ai/ai-files.state.json
+CLAUDE.md

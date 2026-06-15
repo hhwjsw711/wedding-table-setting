@@ -1,10 +1,9 @@
 import type { CSSProperties } from "react";
 
-import { dietaryBadgeDefinitions, STATE_QUERY_KEY } from "@/planner/constants";
+import { dietaryBadgeDefinitions } from "@/planner/constants";
 import type {
   DietaryBadgeDefinition,
   Guest,
-  LegacyPlannerState,
   PlannerState,
   Seat,
   SeatSide,
@@ -167,45 +166,7 @@ function findHeaderIndex(headers: string[], aliases: string[]) {
   return headers.findIndex((header) => aliases.includes(header));
 }
 
-export function encodeState(state: PlannerState) {
-  const json = JSON.stringify(state);
-  const bytes = new TextEncoder().encode(json);
-  let binary = "";
-  bytes.forEach((byte) => {
-    binary += String.fromCharCode(byte);
-  });
-  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
-}
 
-export function decodeState(encoded: string): PlannerState | null {
-  try {
-    const base64 = encoded.replace(/-/g, "+").replace(/_/g, "/");
-    const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, "=");
-    const binary = atob(padded);
-    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
-    const parsed = JSON.parse(new TextDecoder().decode(bytes)) as LegacyPlannerState;
-    if (!Array.isArray(parsed.tables) || !Array.isArray(parsed.guests) || typeof parsed.assignments !== "object") return null;
-    return sanitizeAssignments(normalizePlannerState(parsed));
-  } catch {
-    return null;
-  }
-}
-
-export function normalizePlannerState(state: LegacyPlannerState): PlannerState {
-  return {
-    ...state,
-    guests: state.guests.map(({ notes, ...guest }) => ({
-      ...guest,
-      dietary: guest.dietary ?? notes ?? "",
-    })),
-  };
-}
-
-export function loadStateFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  const encoded = params.get(STATE_QUERY_KEY);
-  return encoded ? decodeState(encoded) : null;
-}
 
 export function createId(prefix: string) {
   return `${prefix}-${crypto.randomUUID()}`;

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useI18n } from "@/i18n";
 import type { Guest } from "@/planner/types";
+import { DND_GUEST_TYPE } from "@/planner/dnd";
 
 export function GuestChip({
   guest,
@@ -22,7 +23,7 @@ export function GuestChip({
       className="!grid min-h-14 grid-cols-12 items-center gap-2.5 rounded-lg border-border bg-background py-2.5 pr-2.5 pl-3 shadow-none transition-all hover:border-primary hover:shadow-lg"
       draggable
       onDragStart={(event) => {
-        event.dataTransfer.setData("application/x-guest-id", guest.id);
+        event.dataTransfer.setData(DND_GUEST_TYPE, guest.id);
       }}
     >
       <span className="col-span-5 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">

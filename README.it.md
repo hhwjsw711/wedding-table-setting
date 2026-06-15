@@ -1,6 +1,6 @@
 # Wedding Table Planner
 
-**Un elegante strumento drag‑and‑drop per pianificare la disposizione dei tavoli al matrimonio. Funziona interamente nel tuo browser — condividi i piani con un semplice link.**
+**Un elegante strumento drag‑and‑drop per pianificare la disposizione dei tavoli al matrimonio. Crea piani, assegna gli ospiti ai tavoli e condividi con un link.**
 
 [![English](https://img.shields.io/badge/README-English-blue)](README.md) [![中文](https://img.shields.io/badge/README-中文-blue)](README.zh-CN.md)
 
@@ -17,14 +17,9 @@
 - **Importazione CSV** — Importa gli ospiti in blocco con riconoscimento automatico delle intestazioni
 - **Etichette dietetiche** — Rileva automaticamente Vegetariano, Vegano, Senza glutine, Allergia alla frutta a guscio, Halal, Kosher e altro
 - **Assegnazione per gruppo** — Un clic per posizionare insieme tutti i membri dello stesso gruppo
-- **Condivisione a un link** — L'intero piano è codificato nell'URL; incolla il link per condividerlo
+- **Dashboard multi‑piano** — Gestisci più piani per matrimoni da un unico account
+- **Condivisione via link** — Genera un link di sola lettura per la coppia, il personale della location o gli ospiti
 - **Multi‑lingua** — English, 简体中文, Italiano
-
----
-
-## Demo
-
-Apri [weddingtable.cn](https://weddingtable.cn) e inizia a organizzare.
 
 ---
 
@@ -32,9 +27,11 @@ Apri [weddingtable.cn](https://weddingtable.cn) e inizia a organizzare.
 
 | Livello | Tecnologia |
 |---------|------------|
-| Framework | React 19 |
+| Framework | React 19 + React Router v7 |
 | Linguaggio | TypeScript (strict) |
 | Build | Vite 7 |
+| Backend | Convex (database in tempo reale) |
+| Autenticazione | Convex Auth (email + password) |
 | Stile | Tailwind CSS v4 + shadcn/ui |
 | Icone | Lucide React |
 | Gestore pacchetti | pnpm |
@@ -47,7 +44,10 @@ Apri [weddingtable.cn](https://weddingtable.cn) e inizia a organizzare.
 # Installa le dipendenze
 pnpm install
 
-# Avvia il server di sviluppo
+# Avvia il deployment di sviluppo Convex
+npx convex dev
+
+# Avvia il server frontend (terminale separato)
 pnpm dev
 
 # Build di produzione
@@ -56,48 +56,21 @@ pnpm build
 
 Apri `http://127.0.0.1:5173` nel browser.
 
+Serve un account gratuito [Convex](https://convex.dev) per il backend.
+
 ---
 
-## Come Funziona
+## Architettura
 
-Nessun backend, nessun database. L'intero stato del pianificatore — tavoli, ospiti e assegnazioni dei posti — viene serializzato in JSON, codificato in base64 e memorizzato nel parametro `?state=` dell'URL. La preferenza della lingua è memorizzata in `?lang=`.
+Il planner utilizza [Convex](https://convex.dev) per l'archiviazione persistente, l'autenticazione e la sincronizzazione in tempo reale. Piani, tavoli, ospiti e assegnazioni sono memorizzati come documenti Convex e sincronizzati automaticamente nell'interfaccia tramite query reattive.
 
-| Azione | Flusso dati |
+| Azione | Flusso Dati |
 |--------|-------------|
-| Crea / modifica tavoli | Stato React → URL |
-| Aggiungi / importa ospiti | Stato React → URL |
-| Trascina ospite al posto | Stato React → URL |
-| Condividi | Copia URL → incolla ovunque |
-
----
-
-## Struttura del Progetto
-
-```
-src/
-├── main.tsx                 # Punto d'ingresso
-├── App.tsx                  # Pianificatore principale — tutto lo stato qui
-├── i18n.tsx                 # Internazionalizzazione (en / zh / it)
-├── styles.css               # Stili globali e proprietà CSS personalizzate
-├── components/
-│   ├── table-view.tsx       # Layout visivo del tavolo (rotondo e rettangolare)
-│   ├── table-editor.tsx     # Pannello di configurazione tavolo nella sidebar
-│   ├── guest-chip.tsx       # Scheda ospite trascinabile
-│   ├── seat-button.tsx      # Singolo posto sul tavolo
-│   ├── guest-edit-modal.tsx # Finestra di modifica ospite
-│   ├── seat-assignment-modal.tsx # Finestra di assegnazione posto
-│   ├── dietary-badges.tsx   # Etichette per restrizioni alimentari
-│   ├── stat.tsx             # Scheda statistiche
-│   └── ui/                  # Componenti base shadcn/ui (13 componenti)
-├── hooks/
-│   └── use-mobile.ts        # Hook per breakpoint mobile
-├── lib/
-│   └── utils.ts             # Utility per unione classi Tailwind
-└── planner/
-    ├── types.ts             # Tipi fondamentali
-    ├── constants.ts         # Definizioni etichette dietetiche, stato iniziale
-    └── utils.ts             # Posti, CSV, codifica/decodifica URL, raggruppamento
-```
+| Accedi / Registrati | Convex Auth (email + password) |
+| Crea / gestisci piani | Convex mutations → query in tempo reale |
+| Aggiungi / modifica tavoli e ospiti | Convex mutations → UI reattiva |
+| Trascina ospite al posto | UI ottimistica → Convex mutation → sincronizzazione automatica |
+| Condividi | Genera un token univoco → `/view/:token` (pubblico) |
 
 ---
 

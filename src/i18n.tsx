@@ -1,4 +1,12 @@
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 export type Locale = "en" | "it" | "zh";
 
@@ -16,6 +24,13 @@ export type Messages = {
     saveChanges: string;
     seatByGroup: string;
     unseatTable: string;
+    share: string;
+    back: string;
+    delete: string;
+    rename: string;
+    createPlan: string;
+    createFirstPlan: string;
+    logout: string;
   };
   aria: {
     duplicateTable: (name: string) => string;
@@ -28,11 +43,29 @@ export type Messages = {
     shareLink: string;
     sharePlan: string;
   };
+  auth: {
+    loginTitle: string;
+    signupTitle: string;
+    email: string;
+    password: string;
+    login: string;
+    signup: string;
+    noAccount: string;
+    hasAccount: string;
+  };
   counts: {
     seatedGuests: (seated: number, total: number) => string;
     seats: (count: number) => string;
+    tables: (count: number) => string;
   };
   csvPlaceholder: string;
+  dashboard: {
+    title: string;
+    emptyTitle: string;
+    emptyDescription: string;
+    updatedAt: string;
+    plans: string;
+  };
   defaults: {
     copySuffix: string;
     table: string;
@@ -87,6 +120,15 @@ export type Messages = {
   templates: {
     createGuest: (name: string) => string;
   };
+  viewer: {
+    poweredBy: string;
+    createYourOwn: string;
+    searchPlaceholder: string;
+    notFound: string;
+    notFoundDescription: string;
+    invalidLink: string;
+    loading: string;
+  };
 };
 
 const messages: Record<Locale, Messages> = {
@@ -97,46 +139,71 @@ const messages: Record<Locale, Messages> = {
       cancel: "Cancel",
       chooseCsv: "Choose CSV",
       clearSeat: "Clear Seat",
-      copyLink: "Copy link",
+      copyLink: "Copy Link",
       copied: "Copied",
       edit: "Edit",
       importGuests: "Import Guests",
-      saveChanges: "Save Changes",
+      saveChanges: "Save",
       seatByGroup: "Seat by Group",
-      unseatTable: "Unseat Table",
+      unseatTable: "Clear Table",
+      share: "Share",
+      back: "Back",
+      delete: "Delete",
+      rename: "Rename",
+      createPlan: "New Banquet",
+      createFirstPlan: "Plan Your First Banquet",
+      logout: "Log out",
     },
     aria: {
-      duplicateTable: (name) => `Duplicate ${name}`,
-      editGuest: (name) => `Edit ${name}`,
+      duplicateTable: (name) => `Duplicate "${name}"`,
+      editGuest: (name) => `Edit "${name}"`,
       language: "Switch language",
-      nameForTable: (name) => `Name for ${name}`,
-      planStatus: "Plan status",
-      removeGuest: (name) => `Remove ${name}`,
-      removeTable: (name) => `Remove ${name}`,
+      nameForTable: (name) => `Name for "${name}"`,
+      planStatus: "Banquet overview",
+      removeGuest: (name) => `Remove "${name}"`,
+      removeTable: (name) => `Remove "${name}"`,
       shareLink: "Share link",
-      sharePlan: "Share this plan",
+      sharePlan: "Share this banquet",
+    },
+    auth: {
+      loginTitle: "Log in",
+      signupTitle: "Sign up",
+      email: "Email",
+      password: "Password",
+      login: "Log in",
+      signup: "Sign up",
+      noAccount: "No account yet? Sign up",
+      hasAccount: "Already have an account? Log in",
     },
     counts: {
       seatedGuests: (seated, total) => `${seated}/${total} seated`,
       seats: (count) => `${count} ${count === 1 ? "seat" : "seats"}`,
+      tables: (count) => `${count} ${count === 1 ? "table" : "tables"}`,
     },
-    csvPlaceholder: "name,group,dietary\nAlice Smith,Family,Vegetarian",
+    csvPlaceholder: "name,group,dietary\nAlice Smith,Bride's family,Vegetarian",
+    dashboard: {
+      title: "My Banquets",
+      emptyTitle: "No banquets yet",
+      emptyDescription: "Plan your first wedding banquet.",
+      updatedAt: "Updated",
+      plans: "Banquets",
+    },
     defaults: {
       copySuffix: "Copy",
       table: "Table",
-      topTable: "Top Table",
+      topTable: "Head Table",
     },
     empty: {
-      allGuestsSeated: "All guests have seats.",
+      allGuestsSeated: "Everyone has a seat.",
       noGuestsFound: "No guests found.",
     },
     fields: {
       dietary: "Dietary",
-      dietaryRestrictions: "Dietary restrictions",
+      dietaryRestrictions: "Dietary preferences",
       group: "Group",
       name: "Name",
       searchGuests: "Search guests",
-      totalSeats: "Total seats",
+      totalSeats: "Seats",
       type: "Type",
     },
     language: {
@@ -155,9 +222,9 @@ const messages: Record<Locale, Messages> = {
       top: "Top",
     },
     sections: {
-      guests: "Guests",
+      guests: "Guest List",
       tables: "Tables",
-      unseated: "Unseated",
+      unseated: "To Seat",
     },
     stats: {
       guests: "Guests",
@@ -166,14 +233,24 @@ const messages: Record<Locale, Messages> = {
       tables: "Tables",
     },
     statuses: {
-      unseated: "Unseated",
+      unseated: "To seat",
     },
     tableShapes: {
       rectangular: "Rectangular",
       round: "Round",
     },
     templates: {
-      createGuest: (name) => `Create "${name}"`,
+      createGuest: (name) => `Add "${name}"`,
+    },
+    viewer: {
+      poweredBy: "Made by Hongwei Hu",
+      createYourOwn: "Create your own banquet",
+      searchPlaceholder: "Search your name\u2026",
+      notFound: "Banquet not found",
+      notFoundDescription:
+        "This link may have expired. Ask the host for a new one.",
+      invalidLink: "Invalid link",
+      loading: "Loading\u2026",
     },
   },
   it: {
@@ -187,26 +264,51 @@ const messages: Record<Locale, Messages> = {
       copied: "Copiato",
       edit: "Modifica",
       importGuests: "Importa ospiti",
-      saveChanges: "Salva modifiche",
+      saveChanges: "Salva",
       seatByGroup: "Assegna per gruppo",
       unseatTable: "Libera tavolo",
+      share: "Condividi",
+      back: "Indietro",
+      delete: "Elimina",
+      rename: "Rinomina",
+      createPlan: "Nuovo banchetto",
+      createFirstPlan: "Organizza il tuo primo banchetto",
+      logout: "Esci",
     },
     aria: {
-      duplicateTable: (name) => `Duplica ${name}`,
-      editGuest: (name) => `Modifica ${name}`,
+      duplicateTable: (name) => `Duplica "${name}"`,
+      editGuest: (name) => `Modifica "${name}"`,
       language: "Cambia lingua",
-      nameForTable: (name) => `Nome per ${name}`,
-      planStatus: "Stato del piano",
-      removeGuest: (name) => `Rimuovi ${name}`,
-      removeTable: (name) => `Rimuovi ${name}`,
+      nameForTable: (name) => `Nome per "${name}"`,
+      planStatus: "Panoramica banchetto",
+      removeGuest: (name) => `Rimuovi "${name}"`,
+      removeTable: (name) => `Rimuovi "${name}"`,
       shareLink: "Link di condivisione",
-      sharePlan: "Condividi questo piano",
+      sharePlan: "Condividi questo banchetto",
+    },
+    auth: {
+      loginTitle: "Accedi",
+      signupTitle: "Registrati",
+      email: "Email",
+      password: "Password",
+      login: "Accedi",
+      signup: "Registrati",
+      noAccount: "Non hai un account? Registrati",
+      hasAccount: "Hai già un account? Accedi",
     },
     counts: {
       seatedGuests: (seated, total) => `${seated}/${total} assegnati`,
       seats: (count) => `${count} ${count === 1 ? "posto" : "posti"}`,
+      tables: (count) => `${count} ${count === 1 ? "tavolo" : "tavoli"}`,
     },
     csvPlaceholder: "nome,gruppo,dieta\nAlice Rossi,Famiglia,Vegetariano",
+    dashboard: {
+      title: "I miei banchetti",
+      emptyTitle: "Nessun banchetto",
+      emptyDescription: "Organizza il tuo primo banchetto nuziale.",
+      updatedAt: "Aggiornato",
+      plans: "Banchetti",
+    },
     defaults: {
       copySuffix: "Copia",
       table: "Tavolo",
@@ -234,16 +336,16 @@ const messages: Record<Locale, Messages> = {
       guestDetails: "Dettagli ospite",
     },
     seats: {
-      bottom: "Basso",
+      bottom: "Sotto",
       left: "Sinistra",
       right: "Destra",
       seat: "Posto",
-      top: "Alto",
+      top: "Sopra",
     },
     sections: {
-      guests: "Ospiti",
+      guests: "Lista ospiti",
       tables: "Tavoli",
-      unseated: "Da assegnare",
+      unseated: "Da sistemare",
     },
     stats: {
       guests: "Ospiti",
@@ -252,20 +354,29 @@ const messages: Record<Locale, Messages> = {
       tables: "Tavoli",
     },
     statuses: {
-      unseated: "Da assegnare",
+      unseated: "Da sistemare",
     },
     tableShapes: {
       rectangular: "Rettangolare",
       round: "Rotondo",
     },
     templates: {
-      createGuest: (name) => `Crea "${name}"`,
+      createGuest: (name) => `Aggiungi "${name}"`,
+    },
+    viewer: {
+      poweredBy: "Realizzato da Hongwei Hu",
+      createYourOwn: "Crea il tuo banchetto",
+      searchPlaceholder: "Cerca il tuo nome\u2026",
+      notFound: "Banchetto non trovato",
+      notFoundDescription: "Questo link potrebbe essere scaduto. Chiedi un nuovo link all'organizzatore.",
+      invalidLink: "Link non valido",
+      loading: "Caricamento\u2026",
     },
   },
   zh: {
     actions: {
       addGuest: "添加宾客",
-      addTable: "添加桌位",
+      addTable: "添加餐桌",
       cancel: "取消",
       chooseCsv: "选择CSV",
       clearSeat: "清空座位",
@@ -273,42 +384,67 @@ const messages: Record<Locale, Messages> = {
       copied: "已复制",
       edit: "编辑",
       importGuests: "导入宾客",
-      saveChanges: "保存更改",
-      seatByGroup: "按组分配",
-      unseatTable: "清空桌位",
+      saveChanges: "保存",
+      seatByGroup: "按组入座",
+      unseatTable: "清空餐桌",
+      share: "分享",
+      back: "返回",
+      delete: "删除",
+      rename: "重命名",
+      createPlan: "新建宴席",
+      createFirstPlan: "开始第一个宴席",
+      logout: "退出登录",
     },
     aria: {
-      duplicateTable: (name) => `复制 ${name}`,
-      editGuest: (name) => `编辑 ${name}`,
+      duplicateTable: (name) => `复制「${name}」`,
+      editGuest: (name) => `编辑「${name}」`,
       language: "切换语言",
-      nameForTable: (name) => `${name} 的名称`,
-      planStatus: "方案状态",
-      removeGuest: (name) => `移除 ${name}`,
-      removeTable: (name) => `移除 ${name}`,
+      nameForTable: (name) => `为「${name}」命名`,
+      planStatus: "宴席概况",
+      removeGuest: (name) => `移除「${name}」`,
+      removeTable: (name) => `移除「${name}」`,
       shareLink: "分享链接",
-      sharePlan: "分享此方案",
+      sharePlan: "分享宴席",
+    },
+    auth: {
+      loginTitle: "登录",
+      signupTitle: "注册",
+      email: "邮箱",
+      password: "密码",
+      login: "登录",
+      signup: "注册",
+      noAccount: "还没有账号？注册一个",
+      hasAccount: "已有账号？去登录",
     },
     counts: {
       seatedGuests: (seated, total) => `${seated}/${total} 已入座`,
       seats: (count) => `${count} 个座位`,
+      tables: (count) => `${count} 张餐桌`,
     },
-    csvPlaceholder: "姓名,组别,饮食\n张三,家人,素食",
+    csvPlaceholder: "姓名,组别,饮食\n张三,新娘亲友,素食",
+    dashboard: {
+      title: "我的宴席",
+      emptyTitle: "还没有宴席",
+      emptyDescription: "创建你的第一场婚宴座位安排。",
+      updatedAt: "更新于",
+      plans: "宴席",
+    },
     defaults: {
       copySuffix: "副本",
-      table: "桌",
+      table: "餐桌",
       topTable: "主桌",
     },
     empty: {
-      allGuestsSeated: "所有宾客已入座。",
-      noGuestsFound: "未找到宾客。",
+      allGuestsSeated: "宾客都已安排好了。",
+      noGuestsFound: "没有找到宾客。",
     },
     fields: {
-      dietary: "饮食",
-      dietaryRestrictions: "饮食限制",
-      group: "组别",
+      dietary: "饮食偏好",
+      dietaryRestrictions: "饮食偏好",
+      group: "分组",
       name: "姓名",
       searchGuests: "搜索宾客",
-      totalSeats: "座位总数",
+      totalSeats: "座位数",
       type: "类型",
     },
     language: {
@@ -316,7 +452,7 @@ const messages: Record<Locale, Messages> = {
       next: "Italiano",
     },
     modals: {
-      editGuest: "编辑宾客",
+      editGuest: "编辑宾客信息",
       guestDetails: "宾客详情",
     },
     seats: {
@@ -327,25 +463,34 @@ const messages: Record<Locale, Messages> = {
       top: "上",
     },
     sections: {
-      guests: "宾客",
-      tables: "桌位",
-      unseated: "待入座",
+      guests: "宾客名单",
+      tables: "餐桌",
+      unseated: "待安排",
     },
     stats: {
       guests: "宾客",
-      open: "空闲",
+      open: "空位",
       seats: "座位",
-      tables: "桌位",
+      tables: "餐桌",
     },
     statuses: {
-      unseated: "待入座",
+      unseated: "待安排",
     },
     tableShapes: {
-      rectangular: "矩形",
-      round: "圆形",
+      rectangular: "长桌",
+      round: "圆桌",
     },
     templates: {
-      createGuest: (name) => `创建"${name}"`,
+      createGuest: (name) => `添加"${name}"`,
+    },
+    viewer: {
+      poweredBy: "由 胡洪伟 开发",
+      createYourOwn: "创建你自己的宴席",
+      searchPlaceholder: "搜索你的名字…",
+      notFound: "未找到宴席",
+      notFoundDescription: "分享链接可能已过期，请联系宴席主人获取新链接。",
+      invalidLink: "无效链接",
+      loading: "正在加载…",
     },
   },
 };
@@ -372,7 +517,10 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = locale;
   }, [locale]);
 
-  const value = useMemo(() => ({ locale, setLocale, t: messages[locale] }), [locale, setLocale]);
+  const value = useMemo(
+    () => ({ locale, setLocale, t: messages[locale] }),
+    [locale, setLocale],
+  );
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 }
@@ -383,7 +531,9 @@ export function useI18n() {
   return value;
 }
 
-export function normalizeLocale(value: string | null | undefined): Locale | null {
+export function normalizeLocale(
+  value: string | null | undefined,
+): Locale | null {
   const normalized = value?.trim().toLowerCase();
   if (!normalized) return null;
   if (normalized === "it" || normalized.startsWith("it-")) return "it";
@@ -396,6 +546,8 @@ function resolveInitialLocale(): Locale {
   if (typeof window === "undefined") return "zh";
 
   const params = new URLSearchParams(window.location.search);
-  const explicitLocale = normalizeLocale(params.get("lang") ?? params.get("locale"));
+  const explicitLocale = normalizeLocale(
+    params.get("lang") ?? params.get("locale"),
+  );
   return explicitLocale ?? "zh";
 }

@@ -1,6 +1,4 @@
-import type { DietaryBadgeDefinition, PlannerState } from "@/planner/types";
-
-export const STATE_QUERY_KEY = "state";
+import type { DietaryBadgeDefinition } from "@/planner/types";
 
 export const dietaryBadgeDefinitions: DietaryBadgeDefinition[] = [
   {
@@ -52,33 +50,3 @@ export const dietaryBadgeDefinitions: DietaryBadgeDefinition[] = [
     patterns: [/\bkosher\b/i],
   },
 ];
-
-export function createStarterState(labels: { table: string; topTable: string }): PlannerState {
-  return {
-    tables: [
-      {
-        id: "table-1",
-        name: labels.topTable,
-        shape: "round",
-        roundSeats: 10,
-        topSeats: 0,
-        rightSeats: 0,
-        bottomSeats: 0,
-        leftSeats: 0,
-      },
-      {
-        id: "table-2",
-        name: `${labels.table} 2`,
-        shape: "round",
-        roundSeats: 10,
-        topSeats: 0,
-        rightSeats: 0,
-        bottomSeats: 0,
-        leftSeats: 0,
-      },
-    ],
-    guests: [],
-    assignments: {},
-  };
-}
-
