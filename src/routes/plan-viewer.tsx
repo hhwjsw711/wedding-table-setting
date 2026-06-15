@@ -7,6 +7,7 @@ import { SeatButton } from "@/components/seat-button";
 import { Stat } from "@/components/stat";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { useI18n } from "@/i18n";
 import type { Guest, WeddingTable } from "@/planner/types";
 import { createSeatsForTable, getRoundSeatStyle } from "@/planner/utils";
@@ -98,6 +99,7 @@ export function PlanViewerPage() {
 
           </div>
           <div className="flex items-center gap-3">
+            <LanguageSwitcher />
             <Input
               className="w-48"
               placeholder={t.viewer.searchPlaceholder}

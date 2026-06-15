@@ -1,10 +1,11 @@
 import { type FormEvent, useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { useI18n } from "@/i18n";
 
 export function LoginPage() {
@@ -37,6 +38,10 @@ export function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-canvas p-4">
+      <div className="absolute top-4 left-4 right-4 flex justify-between">
+        <Link to="/" className="text-xs font-medium text-muted-foreground hover:text-primary">← {t.actions.home}</Link>
+        <LanguageSwitcher />
+      </div>
       <Card className="w-full max-w-sm">
           <CardHeader className="text-center">
           <CardTitle className="text-xl font-bold">

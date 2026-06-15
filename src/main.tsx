@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router";
 import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { convex } from "./convex";
 import { RootLayout } from "@/routes/__root";
+import { LandingPage } from "@/routes/landing";
 import { LoginPage } from "@/routes/login";
 import { DashboardPage } from "@/routes/dashboard";
 import { PlanEditorPage } from "@/routes/plan-editor";
@@ -19,7 +20,7 @@ createRoot(document.getElementById("root")!).render(
         <BrowserRouter>
           <Routes>
           <Route element={<RootLayout />}>
-            <Route index element={<LoginPage />} />
+            <Route index element={<LandingPage />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="dashboard" element={<AuthenticatedRoute><DashboardPage /></AuthenticatedRoute>} />
             <Route path="plan/:planId" element={<AuthenticatedRoute><PlanEditorPage /></AuthenticatedRoute>} />

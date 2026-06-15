@@ -26,6 +26,7 @@ export type Messages = {
     unseatTable: string;
     share: string;
     back: string;
+    home: string;
     delete: string;
     rename: string;
     createPlan: string;
@@ -129,6 +130,30 @@ export type Messages = {
     invalidLink: string;
     loading: string;
   };
+  landing: {
+    heroEyebrow: string;
+    heroTitle: string;
+    heroTagline: string;
+    startFree: string;
+    galleryLabel: string;
+    galleryTitle: string;
+    galleryLede: string;
+    featuresLabel: string;
+    featuresTitle: string;
+    features: { name: string; desc: string }[];
+    stepsTitle: string;
+    stepsLabel: string;
+    steps: { title: string; desc: string }[];
+    pricingLabel: string;
+    pricingTitle: string;
+    pricingFree: string;
+    pricingVs: string;
+    pricingTerms: string;
+    faqLabel: string;
+    faqTitle: string;
+    faq: { q: string; a: string }[];
+    footerTagline: string;
+  };
 };
 
 const messages: Record<Locale, Messages> = {
@@ -148,6 +173,7 @@ const messages: Record<Locale, Messages> = {
       unseatTable: "Clear Table",
       share: "Share",
       back: "Back",
+      home: "Home",
       delete: "Delete",
       rename: "Rename",
       createPlan: "New Banquet",
@@ -252,6 +278,47 @@ const messages: Record<Locale, Messages> = {
       invalidLink: "Invalid link",
       loading: "Loading\u2026",
     },
+    landing: {
+      heroEyebrow: "Free \u00b7 No Registration \u00b7 Multi-language",
+      heroTitle: "Wedding Table",
+      heroTagline: "The hardest part of wedding planning isn't the venue \u2014 it's the seating chart. Drag, drop, done in five minutes.",
+      startFree: "Start Free",
+      galleryLabel: "Gallery",
+      galleryTitle: "Beautiful Weddings, Perfectly Seated",
+      galleryLede: "From round tables to long banquet rows, every layout finds its place.",
+      featuresLabel: "Features",
+      featuresTitle: "Everything You Need",
+      features: [
+        { name: "Drag & Drop Seating", desc: "Drag guests directly onto seats. Swap, reorder, clear with a click. No spreadsheets needed." },
+        { name: "CSV Batch Import", desc: "Paste or upload your guest list. Auto-detects name, group, and dietary columns." },
+        { name: "Dietary Badge Detection", desc: "Automatically identifies vegetarian, vegan, gluten-free, nut allergy, halal, kosher, and more." },
+        { name: "Share & Collaborate", desc: "Generate a share link in one click. Family and planners view the seating chart instantly \u2014 no account needed." },
+        { name: "Multi-language Support", desc: "Chinese, English, and Italian. Your guests see the chart in their own language." },
+        { name: "Mixed Table Shapes", desc: "Round tables and rectangular tables in the same plan. Customize seats per side." },
+      ],
+      stepsTitle: "How It Works",
+      stepsLabel: "How It Works",
+      steps: [
+        { title: "Create a Banquet", desc: "Name your event. We'll set up a default table so you can start immediately." },
+        { title: "Add Guests", desc: "Type names one by one, or paste a CSV. Dietary preferences are auto-detected." },
+        { title: "Drag to Seat", desc: "Drag each guest onto a seat. Use 'Seat By Group' to auto-place groups together." },
+        { title: "Share the Link", desc: "One click generates a shared view link. No account needed for guests or planners." },
+      ],
+      pricingLabel: "Pricing",
+      pricingTitle: "Pricing",
+      pricingFree: "Free",
+      pricingVs: "Professional wedding planners charge <s>$500-2,000</s> just for the seating chart. This tool does it in minutes, <span class=\"hl\">at zero cost</span>.",
+      pricingTerms: "Completely free. No registration required to receive a shared link. No hidden fees. No limits on guests, tables, or plans.",
+      faqLabel: "FAQ",
+      faqTitle: "Frequently Asked Questions",
+      faq: [
+        { q: "Do guests need an account to view the seating chart?", a: "No. When you share the link, anyone can view it \u2014 no registration needed." },
+        { q: "Can I print the seating chart?", a: "Yes. You can print directly from the shared view page. The layout is optimized for printing round and rectangular tables." },
+        { q: "How many guests can I add?", a: "No limit. Add as many guests and tables as you need. CSV import supports up to 500 guests per batch." },
+        { q: "What if I need help?", a: "Everything is explained on the page. If you're stuck, just try dragging a guest \u2014 that's all you need to get started." },
+      ],
+      footerTagline: "Your wedding, perfectly seated.",
+    },
   },
   it: {
     actions: {
@@ -269,6 +336,7 @@ const messages: Record<Locale, Messages> = {
       unseatTable: "Libera tavolo",
       share: "Condividi",
       back: "Indietro",
+      home: "Home",
       delete: "Elimina",
       rename: "Rinomina",
       createPlan: "Nuovo banchetto",
@@ -372,6 +440,47 @@ const messages: Record<Locale, Messages> = {
       invalidLink: "Link non valido",
       loading: "Caricamento\u2026",
     },
+    landing: {
+      heroEyebrow: "Gratuito \u00b7 Nessuna registrazione \u00b7 Multilingue",
+      heroTitle: "Wedding Table",
+      heroTagline: "La parte pi\u00f9 difficile del matrimonio non \u00e8 la location \u2014 \u00e8 la disposizione dei tavoli. Trascina, rilascia, fatto in cinque minuti.",
+      startFree: "Inizia Gratis",
+      galleryLabel: "Galleria",
+      galleryTitle: "Matrimoni Bellissimi, Perfettamente Organizzati",
+      galleryLede: "Dai tavoli rotondi alle lunghe file da banchetto, ogni disposizione trova il suo posto.",
+      featuresLabel: "Caratteristiche",
+      featuresTitle: "Tutto Ci\u00f2 di Cui Hai Bisogno",
+      features: [
+        { name: "Disposizione Drag & Drop", desc: "Trascina gli ospiti direttamente sui posti. Scambia, riordina, cancella con un clic. Niente fogli di calcolo." },
+        { name: "Importazione CSV", desc: "Incolla o carica la tua lista degli invitati. Rileva automaticamente nome, gruppo e colonne dietetiche." },
+        { name: "Rilevamento Diete", desc: "Identifica automaticamente vegetariano, vegano, senza glutine, allergia alle noci, halal, kosher e altro." },
+        { name: "Condivisione Link", desc: "Genera un link di condivisione con un clic. Familiari e wedding planner vedono la disposizione istantaneamente \u2014 senza account." },
+        { name: "Supporto Multilingue", desc: "Cinese, inglese e italiano. I tuoi ospiti vedono la disposizione nella propria lingua." },
+        { name: "Tavoli Misti", desc: "Tavoli rotondi e rettangolari nello stesso piano. Personalizza i posti per lato." },
+      ],
+      stepsTitle: "Come Funziona",
+      stepsLabel: "Come Funziona",
+      steps: [
+        { title: "Crea un Banchetto", desc: "Dai un nome al tuo evento. Prepariamo un tavolo predefinito per iniziare subito." },
+        { title: "Aggiungi Ospiti", desc: "Digita i nomi uno per uno o incolla un CSV. Le preferenze alimentari vengono rilevate automaticamente." },
+        { title: "Assegna i Posti", desc: "Trascina ogni ospite su un posto. Usa 'Assegna per Gruppo' per posizionare i gruppi insieme." },
+        { title: "Condividi il Link", desc: "Un clic genera un link di visualizzazione condiviso. Nessun account richiesto per ospiti o organizzatori." },
+      ],
+      pricingLabel: "Prezzi",
+      pricingTitle: "Prezzi",
+      pricingFree: "Gratuito",
+      pricingVs: "I wedding planner professionisti chiedono <s>\u20ac500-2.000</s> solo per la disposizione dei tavoli. Questo strumento lo fa in pochi minuti, <span class=\"hl\">a costo zero</span>.",
+      pricingTerms: "Completamente gratuito. Nessuna registrazione richiesta per ricevere un link condiviso. Nessun costo nascosto. Nessun limite di ospiti, tavoli o piani.",
+      faqLabel: "Domande Frequenti",
+      faqTitle: "Domande Frequenti",
+      faq: [
+        { q: "Gli ospiti devono creare un account per vedere la disposizione?", a: "No. Quando condividi il link, chiunque pu\u00f2 visualizzarlo \u2014 senza registrazione." },
+        { q: "Posso stampare la disposizione dei tavoli?", a: "S\u00ec. Puoi stampare direttamente dalla pagina di visualizzazione condivisa. Il layout \u00e8 ottimizzato per la stampa di tavoli rotondi e rettangolari." },
+        { q: "Quanti ospiti posso aggiungere?", a: "Nessun limite. Aggiungi tutti gli ospiti e i tavoli di cui hai bisogno. L'importazione CSV supporta fino a 500 ospiti per batch." },
+        { q: "Cosa fare se ho bisogno di aiuto?", a: "Tutto \u00e8 spiegato sulla pagina. Se sei bloccato, prova a trascinare un ospite \u2014 \u00e8 tutto ci\u00f2 che ti serve per iniziare." },
+      ],
+      footerTagline: "Il tuo matrimonio, perfettamente organizzato.",
+    },
   },
   zh: {
     actions: {
@@ -389,6 +498,7 @@ const messages: Record<Locale, Messages> = {
       unseatTable: "清空餐桌",
       share: "分享",
       back: "返回",
+      home: "首页",
       delete: "删除",
       rename: "重命名",
       createPlan: "新建宴席",
@@ -490,7 +600,48 @@ const messages: Record<Locale, Messages> = {
       notFound: "未找到宴席",
       notFoundDescription: "分享链接可能已过期，请联系宴席主人获取新链接。",
       invalidLink: "无效链接",
-      loading: "正在加载…",
+      loading: "正在加载\u2026",
+    },
+    landing: {
+      heroEyebrow: "免费 \u00b7 无需注册 \u00b7 多语言",
+      heroTitle: "婚礼排座",
+      heroTagline: "筹备婚礼最头疼的不是选场地，是排座位。拖拽几下，五分钟搞定。",
+      startFree: "免费开始",
+      galleryLabel: "预览",
+      galleryTitle: "每一场婚礼，都值得精心安排",
+      galleryLede: "从十人圆桌到长条宴会桌，每种布局都从容应对。",
+      featuresLabel: "功能",
+      featuresTitle: "功能一览",
+      features: [
+        { name: "拖拽排座", desc: "把宾客直接拖到座位上。点击即可交换、重排、清空，告别 Excel。" },
+        { name: "CSV 批量导入", desc: "粘贴或上传宾客名单，自动识别姓名、分组、饮食偏好列。" },
+        { name: "饮食偏好标签", desc: "自动识别素食、纯素、无麸质、坚果过敏、清真、犹太洁食等饮食限制。" },
+        { name: "一键分享协作", desc: "生成分享链接，家人和婚庆团队即时查看座位图，无需注册。" },
+        { name: "多语言支持", desc: "中文、英文、意大利语。你的宾客用自己的语言查看座位图。" },
+        { name: "混合桌形", desc: "同一方案中可同时使用圆桌和长桌，每边座位数可自定义。" },
+      ],
+      stepsTitle: "使用流程",
+      stepsLabel: "使用流程",
+      steps: [
+        { title: "创建宴席", desc: "给你的宴席取个名字。我们默认创建一张餐桌，让你可以立刻开始。" },
+        { title: "添加宾客", desc: "逐一手动输入，或粘贴 CSV 一次性导入。饮食偏好自动识别。" },
+        { title: "拖拽入座", desc: "把每位宾客拖到座位上。使用\"按组落座\"一键安排同组宾客。" },
+        { title: "分享链接", desc: "一键生成只读分享链接，宾客和策划团队无需注册即可查看。" },
+      ],
+      pricingLabel: "价格",
+      pricingTitle: "价格",
+      pricingFree: "免费",
+      pricingVs: "专业婚庆策划公司仅座位排布就收费 <s>\u00a5500-2000</s>。用这个工具，几分钟搞定，<span class=\"hl\">完全免费</span>。",
+      pricingTerms: "完全免费。接收分享链接无需注册。无隐藏费用。不限制宾客数量、餐桌数量和方案数量。",
+      faqLabel: "常见问题",
+      faqTitle: "常见问题",
+      faq: [
+        { q: "宾客查看座位图需要注册吗？", a: "不需要。分享链接后任何人可直接查看，无需注册。" },
+        { q: "可以打印座位图吗？", a: "可以。在分享查看页面直接打印，排版已针对圆桌和长桌优化。" },
+        { q: "可以添加多少宾客？", a: "无限制。按需添加宾客和餐桌。CSV 导入每次最多支持 500 条。" },
+        { q: "不会用怎么办？", a: "页面上的提示会引导你。最简单的上手方式：试试拖拽一个宾客到座位上。" },
+      ],
+      footerTagline: "你的婚礼，完美入座。",
     },
   },
 };

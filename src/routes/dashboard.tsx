@@ -7,6 +7,7 @@ import { Plus, LogOut, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { useI18n } from "@/i18n";
 
 export function DashboardPage() {
@@ -74,10 +75,13 @@ export function DashboardPage() {
           <div>
             <h1 className="text-2xl font-bold text-foreground">{t.dashboard.title}</h1>
           </div>
-          <Button variant="outline" onClick={() => signOut()}>
-            <LogOut className="mr-2 size-4" />
-            {t.actions.logout}
-          </Button>
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <Button variant="outline" onClick={() => signOut()}>
+              <LogOut className="mr-2 size-4" />
+              {t.actions.logout}
+            </Button>
+          </div>
         </div>
 
         <div className="mb-6 flex gap-2">
