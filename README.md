@@ -1,17 +1,18 @@
-# Wedding Table Planner
+# Wedding Table
 
-**A beautiful, drag-and-drop wedding seating planner. Create plans, assign guests to tables, and share with a link.**
+**A beautiful, drag-and-drop wedding seating planner. Create banquets, assign guests to tables, and share with a link.**
 
 [![English](https://img.shields.io/badge/README-中文-blue)](README.zh-CN.md) [![Italiano](https://img.shields.io/badge/README-Italiano-green)](README.it.md)
 
 ---
 
-![Wedding Table Planner](public/og-image.png)
+![Wedding Table](public/og-image.png)
 
 ---
 
 ## Features
 
+- **Landing Page** — Product home with features overview, photo gallery, and pricing
 - **Drag & Drop** — Assign guests to seats by dragging from the sidebar
 - **Round & Rectangular Tables** — Mix table shapes, customize seats per side
 - **CSV Import** — Bulk-import guests with auto-detected column headers
@@ -66,6 +67,7 @@ The planner uses [Convex](https://convex.dev) for persistent storage, authentica
 
 | Action | Data Flow |
 |--------|-----------|
+| Landing page | Static home page with product showcase |
 | Log in / sign up | Convex Auth (email + password) |
 | Create / manage plans | Convex mutations → real-time query |
 | Add / edit tables & guests | Convex mutations → reactive UI |
@@ -84,7 +86,8 @@ src/
 ├── styles.css                # Global styles & CSS custom properties
 ├── routes/
 │   ├── __root.tsx            # Root layout (I18nProvider + TooltipProvider)
-│   ├── login.tsx             # Login / sign‑up page
+│   ├── landing.tsx            # Product landing page (/)
+│   ├── login.tsx              # Login / sign‑up page (/login)
 │   ├── dashboard.tsx         # Plan list dashboard
 │   ├── plan-editor.tsx       # Plan editor (tables, guests, seat assignment)
 │   ├── plan-viewer.tsx       # Read‑only shared plan viewer
@@ -93,7 +96,9 @@ src/
 │   ├── use-plan-editor.ts    # Plan editor state & mutation hooks
 │   └── use-mobile.ts         # Mobile breakpoint hook
 ├── components/
-│   ├── table-view.tsx        # Visual table layout (round & rectangular)
+│   ├── language-switcher.tsx  # Language toggle button
+│   ├── wedding-logo.tsx       # Shared SVG logo
+│   ├── table-view.tsx         # Visual table layout (round & rectangular)
 │   ├── table-editor.tsx      # Sidebar table config panel
 │   ├── guest-chip.tsx        # Draggable guest card
 │   ├── seat-button.tsx       # Individual seat on a table

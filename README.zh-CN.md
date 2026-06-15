@@ -1,17 +1,18 @@
-# Wedding Table Planner · 婚礼桌位规划器
+# 婚礼排座 · Wedding Table
 
-**一个优雅的拖拽式婚礼桌位规划工具。创建方案，分配宾客到桌位，一键分享链接。**
+**一个优雅的拖拽式婚礼排座工具。创建宴席，分配宾客到桌位，一键分享链接。**
 
 [![English](https://img.shields.io/badge/README-English-blue)](README.md) [![Italiano](https://img.shields.io/badge/README-Italiano-green)](README.it.md)
 
 ---
 
-![婚礼桌位规划器](public/og-image.png)
+![婚礼排座](public/og-image.png)
 
 ---
 
 ## 功能
 
+- **落地面页** — 产品首页，展示功能、实拍画廊、定价
 - **拖拽排座** — 从侧边栏拖拽宾客到桌位
 - **圆桌 & 矩形桌** — 混合桌形，自定义每边座位数
 - **CSV 导入** — 批量导入宾客，自动识别列头
@@ -66,6 +67,7 @@ pnpm build
 
 | 操作 | 数据流 |
 |------|--------|
+| 首页 | 落地页，展示功能与实拍画廊 |
 | 登录 / 注册 | Convex Auth（邮箱 + 密码） |
 | 创建 / 管理方案 | Convex mutations → 实时查询 |
 | 增删改桌位和宾客 | Convex mutations → 响应式 UI |

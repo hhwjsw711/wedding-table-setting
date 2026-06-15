@@ -1,4 +1,4 @@
-# Wedding Table Planner
+# Wedding Table
 
 **Un elegante strumento drag‑and‑drop per pianificare la disposizione dei tavoli al matrimonio. Crea piani, assegna gli ospiti ai tavoli e condividi con un link.**
 
@@ -6,7 +6,7 @@
 
 ---
 
-![Wedding Table Planner](public/og-image.png)
+![Wedding Table](public/og-image.png)
 
 ---
 
