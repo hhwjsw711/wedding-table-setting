@@ -81,11 +81,10 @@ export function PlanEditorPage() {
           <SidebarHeader className="border-b border-border bg-background p-2">
             <div className="flex min-h-10 items-center justify-between gap-2 px-2">
               <div className="min-w-0">
-                <Link className="mb-1 flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-primary" to="/dashboard">
+                <Link className="flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-primary" to="/dashboard">
                   <ArrowLeft className="size-3" />
                   {t.actions.back}
                 </Link>
-                <span className="text-xs font-semibold text-muted-foreground">{t.counts.seats(editor.seats.length)}</span>
               </div>
               <SidebarTrigger className="flex-none" />
             </div>

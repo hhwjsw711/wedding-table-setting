@@ -68,6 +68,7 @@ export type Messages = {
   };
   defaults: {
     copySuffix: string;
+    planName: string;
     table: string;
     topTable: string;
   };
@@ -121,7 +122,6 @@ export type Messages = {
     createGuest: (name: string) => string;
   };
   viewer: {
-    poweredBy: string;
     createYourOwn: string;
     searchPlaceholder: string;
     notFound: string;
@@ -190,6 +190,7 @@ const messages: Record<Locale, Messages> = {
     },
     defaults: {
       copySuffix: "Copy",
+      planName: "Banquet name",
       table: "Table",
       topTable: "Head Table",
     },
@@ -243,7 +244,6 @@ const messages: Record<Locale, Messages> = {
       createGuest: (name) => `Add "${name}"`,
     },
     viewer: {
-      poweredBy: "Made by Hongwei Hu",
       createYourOwn: "Create your own banquet",
       searchPlaceholder: "Search your name\u2026",
       notFound: "Banquet not found",
@@ -311,6 +311,7 @@ const messages: Record<Locale, Messages> = {
     },
     defaults: {
       copySuffix: "Copia",
+      planName: "Nome banchetto",
       table: "Tavolo",
       topTable: "Tavolo principale",
     },
@@ -364,7 +365,6 @@ const messages: Record<Locale, Messages> = {
       createGuest: (name) => `Aggiungi "${name}"`,
     },
     viewer: {
-      poweredBy: "Realizzato da Hongwei Hu",
       createYourOwn: "Crea il tuo banchetto",
       searchPlaceholder: "Cerca il tuo nome\u2026",
       notFound: "Banchetto non trovato",
@@ -431,6 +431,7 @@ const messages: Record<Locale, Messages> = {
     },
     defaults: {
       copySuffix: "副本",
+      planName: "宴席名称",
       table: "餐桌",
       topTable: "主桌",
     },
@@ -484,7 +485,6 @@ const messages: Record<Locale, Messages> = {
       createGuest: (name) => `添加"${name}"`,
     },
     viewer: {
-      poweredBy: "由 胡洪伟 开发",
       createYourOwn: "创建你自己的宴席",
       searchPlaceholder: "搜索你的名字…",
       notFound: "未找到宴席",

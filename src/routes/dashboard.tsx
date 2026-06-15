@@ -15,6 +15,7 @@ export function DashboardPage() {
   const navigate = useNavigate();
   const plans = (useQuery(api.plans.list) ?? []) as { _id: string; name: string; updatedAt: number }[];
   const createPlan = useMutation(api.plans.create);
+  const createTable = useMutation(api.tables.create);
   const updatePlan = useMutation(api.plans.update);
   const deletePlan = useMutation(api.plans.remove);
   const [newName, setNewName] = useState("");
@@ -28,12 +29,22 @@ export function DashboardPage() {
     setLoading(true);
     try {
       const planId = await createPlan({ name });
+      await createTable({
+        planId: planId as never,
+        name: `${t.defaults.table} 1`,
+        shape: "round",
+        roundSeats: 10,
+        topSeats: 0,
+        rightSeats: 0,
+        bottomSeats: 0,
+        leftSeats: 0,
+      } as never);
       setNewName("");
       navigate(`/plan/${planId}`);
     } finally {
       setLoading(false);
     }
-  }, [newName, createPlan, navigate]);
+  }, [newName, createPlan, createTable, t, navigate]);
 
   const handleRename = useCallback(
     async (planId: string) => {
@@ -71,7 +82,7 @@ export function DashboardPage() {
 
         <div className="mb-6 flex gap-2">
           <Input
-            placeholder={t.defaults.table}
+            placeholder={t.defaults.planName}
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleCreate()}

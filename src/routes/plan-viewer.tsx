@@ -95,7 +95,7 @@ export function PlanViewerPage() {
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-xl font-bold">{plan.name}</h1>
-            <p className="text-xs text-muted-foreground">{t.viewer.poweredBy}</p>
+
           </div>
           <div className="flex items-center gap-3">
             <Input
