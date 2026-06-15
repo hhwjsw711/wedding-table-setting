@@ -22,7 +22,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
-import { type Messages, useI18n } from "@/i18n";
+import { type Locale, type Messages, useI18n } from "@/i18n";
 import { createStarterState, STATE_QUERY_KEY } from "@/planner/constants";
 import type { Guest, GuestEditModalState, NewGuestForm, PlannerState, SeatModalState, WeddingTable } from "@/planner/types";
 import {
@@ -493,7 +493,10 @@ export function App() {
                 currentLabel={t.language.current}
                 label={t.aria.language}
                 nextLabel={t.language.next}
-                onToggle={() => setLocale(locale === "it" ? "en" : "it")}
+                onToggle={() => {
+                  const order: Locale[] = ["en", "zh", "it"];
+                  setLocale(order[(order.indexOf(locale) + 1) % order.length]);
+                }}
               />
               <ShareControl
                 copied={shareCopied}

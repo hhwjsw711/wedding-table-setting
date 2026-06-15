@@ -59,22 +59,22 @@ export function createStarterState(labels: { table: string; topTable: string }):
       {
         id: "table-1",
         name: labels.topTable,
-        shape: "rectangular",
-        roundSeats: 8,
+        shape: "round",
+        roundSeats: 10,
         topSeats: 0,
-        rightSeats: 6,
+        rightSeats: 0,
         bottomSeats: 0,
-        leftSeats: 6,
+        leftSeats: 0,
       },
       {
         id: "table-2",
         name: `${labels.table} 2`,
-        shape: "rectangular",
-        roundSeats: 8,
+        shape: "round",
+        roundSeats: 10,
         topSeats: 0,
-        rightSeats: 6,
+        rightSeats: 0,
         bottomSeats: 0,
-        leftSeats: 6,
+        leftSeats: 0,
       },
     ],
     guests: [],
@@ -82,4 +82,3 @@ export function createStarterState(labels: { table: string; topTable: string }):
   };
 }
 
-export const starterState: PlannerState = createStarterState({ table: "Table", topTable: "Top Table" });

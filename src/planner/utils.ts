@@ -31,12 +31,12 @@ export function createDefaultTable(number: number, tableLabel = "Table"): Weddin
   return {
     id: createId("table"),
     name: `${tableLabel} ${number}`,
-    shape: "rectangular",
-    roundSeats: 8,
+    shape: "round",
+    roundSeats: 10,
     topSeats: 0,
-    rightSeats: 6,
+    rightSeats: 0,
     bottomSeats: 0,
-    leftSeats: 6,
+    leftSeats: 0,
   };
 }
 
@@ -214,11 +214,6 @@ export function createId(prefix: string) {
 export function clamp(value: number, min: number, max: number) {
   if (Number.isNaN(value)) return min;
   return Math.min(max, Math.max(min, value));
-}
-
-export function escapeCsvCell(value: string) {
-  if (!/[",\n\r]/.test(value)) return value;
-  return `"${value.replace(/"/g, '""')}"`;
 }
 
 function addSideSeats(seats: Seat[], table: WeddingTable, side: SeatSide, count: number, label: string) {

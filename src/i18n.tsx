@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
-export type Locale = "en" | "it";
+export type Locale = "en" | "it" | "zh";
 
 export type Messages = {
   actions: {
@@ -141,7 +141,7 @@ const messages: Record<Locale, Messages> = {
     },
     language: {
       current: "EN",
-      next: "Italiano",
+      next: "中文",
     },
     modals: {
       editGuest: "Edit guest",
@@ -262,6 +262,92 @@ const messages: Record<Locale, Messages> = {
       createGuest: (name) => `Crea "${name}"`,
     },
   },
+  zh: {
+    actions: {
+      addGuest: "添加宾客",
+      addTable: "添加桌位",
+      cancel: "取消",
+      chooseCsv: "选择CSV",
+      clearSeat: "清空座位",
+      copyLink: "复制链接",
+      copied: "已复制",
+      edit: "编辑",
+      importGuests: "导入宾客",
+      saveChanges: "保存更改",
+      seatByGroup: "按组分配",
+      unseatTable: "清空桌位",
+    },
+    aria: {
+      duplicateTable: (name) => `复制 ${name}`,
+      editGuest: (name) => `编辑 ${name}`,
+      language: "切换语言",
+      nameForTable: (name) => `${name} 的名称`,
+      planStatus: "方案状态",
+      removeGuest: (name) => `移除 ${name}`,
+      removeTable: (name) => `移除 ${name}`,
+      shareLink: "分享链接",
+      sharePlan: "分享此方案",
+    },
+    counts: {
+      seatedGuests: (seated, total) => `${seated}/${total} 已入座`,
+      seats: (count) => `${count} 个座位`,
+    },
+    csvPlaceholder: "姓名,组别,饮食\n张三,家人,素食",
+    defaults: {
+      copySuffix: "副本",
+      table: "桌",
+      topTable: "主桌",
+    },
+    empty: {
+      allGuestsSeated: "所有宾客已入座。",
+      noGuestsFound: "未找到宾客。",
+    },
+    fields: {
+      dietary: "饮食",
+      dietaryRestrictions: "饮食限制",
+      group: "组别",
+      name: "姓名",
+      searchGuests: "搜索宾客",
+      totalSeats: "座位总数",
+      type: "类型",
+    },
+    language: {
+      current: "中文",
+      next: "Italiano",
+    },
+    modals: {
+      editGuest: "编辑宾客",
+      guestDetails: "宾客详情",
+    },
+    seats: {
+      bottom: "下",
+      left: "左",
+      right: "右",
+      seat: "座位",
+      top: "上",
+    },
+    sections: {
+      guests: "宾客",
+      tables: "桌位",
+      unseated: "待入座",
+    },
+    stats: {
+      guests: "宾客",
+      open: "空闲",
+      seats: "座位",
+      tables: "桌位",
+    },
+    statuses: {
+      unseated: "待入座",
+    },
+    tableShapes: {
+      rectangular: "矩形",
+      round: "圆形",
+    },
+    templates: {
+      createGuest: (name) => `创建"${name}"`,
+    },
+  },
 };
 
 type I18nValue = {
@@ -301,14 +387,15 @@ export function normalizeLocale(value: string | null | undefined): Locale | null
   const normalized = value?.trim().toLowerCase();
   if (!normalized) return null;
   if (normalized === "it" || normalized.startsWith("it-")) return "it";
+  if (normalized === "zh" || normalized.startsWith("zh-")) return "zh";
   if (normalized === "en" || normalized.startsWith("en-")) return "en";
   return null;
 }
 
 function resolveInitialLocale(): Locale {
-  if (typeof window === "undefined") return "en";
+  if (typeof window === "undefined") return "zh";
 
   const params = new URLSearchParams(window.location.search);
   const explicitLocale = normalizeLocale(params.get("lang") ?? params.get("locale"));
-  return explicitLocale ?? "en";
+  return explicitLocale ?? "zh";
 }
