@@ -57,14 +57,20 @@ export type InitialPlanLoad =
   | { status: "not-found" }
   | { status: "store-not-configured" };
 
-export function App({ initialPlanLoad, planId }: { initialPlanLoad?: InitialPlanLoad; planId?: string }) {
+export function App({
+  initialPlanLoad,
+  initialState,
+  planId,
+}: {
+  initialPlanLoad?: InitialPlanLoad;
+  initialState?: PlannerState;
+  planId?: string;
+}) {
   const { locale, setLocale, t } = useI18n();
   const [state, setState] = useState<PlannerState>(() =>
     initialPlanLoad?.status === "available"
       ? initialPlanLoad.plan.state
-      : planId
-        ? createStarterState(t.defaults)
-        : loadStateFromUrl() ?? createStarterState(t.defaults),
+      : initialState ?? (planId ? createStarterState(t.defaults) : loadStateFromUrl() ?? createStarterState(t.defaults)),
   );
   const [seatModal, setSeatModal] = useState<SeatModalState>(null);
   const [guestModal, setGuestModal] = useState<GuestEditModalState>(null);
