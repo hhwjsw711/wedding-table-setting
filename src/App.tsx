@@ -51,6 +51,15 @@ type PersistedPlan = {
 
 type PersistenceStatus = "idle" | "loading" | "saving" | "saved" | "conflict" | "error" | "password-required";
 
+type PlannerDraft = {
+  baseRev: number | null;
+  name: string;
+  planId: string | null;
+  state: PlannerState;
+  updatedAt: string;
+  version: 1;
+};
+
 export type InitialPlanLoad =
   | { status: "available"; plan: PersistedPlan }
   | { status: "password-required" }
@@ -100,6 +109,7 @@ export function App({
   const [persistenceStatus, setPersistenceStatus] = useState<PersistenceStatus>(() => resolveInitialPersistenceStatus(planId, initialPlanLoad));
   const [persistenceError, setPersistenceError] = useState(() => resolveInitialPersistenceError(initialPlanLoad));
   const [conflictPlan, setConflictPlan] = useState<PersistedPlan | null>(null);
+  const [draftCheckedKey, setDraftCheckedKey] = useState<string | null>(null);
 
   const seats = useMemo(() => state.tables.flatMap((table) => createSeatsForTable(table, t.seats)), [state.tables, t.seats]);
   const seatById = useMemo(() => new Map(seats.map((seat) => [seat.id, seat])), [seats]);
@@ -121,6 +131,45 @@ export function App({
   const isDirty = hasContentChanges || hasPasswordChange;
   const isBusy = persistenceStatus === "loading" || persistenceStatus === "saving";
   const normalizedLinkSlug = useMemo(() => createPlanSlug(linkSlug || planName), [linkSlug, planName]);
+  const activeDraftKey = useMemo(() => createPlannerDraftKey(currentPlanId), [currentPlanId]);
+
+  useEffect(() => {
+    if (draftCheckedKey === activeDraftKey) return;
+    if (currentPlanId && !remotePlan) return;
+
+    const draft = !currentPlanId && hasUrlStateQuery() ? null : readPlannerDraft(currentPlanId, remotePlan?.rev ?? null);
+    if (draft) {
+      setPlanName(draft.name);
+      setState(draft.state);
+      setNextPlanPassword("");
+      setClearPlanPassword(false);
+    }
+    setDraftCheckedKey(activeDraftKey);
+  }, [activeDraftKey, currentPlanId, draftCheckedKey, remotePlan]);
+
+  useEffect(() => {
+    if (draftCheckedKey !== activeDraftKey) return;
+    if (currentPlanId && !remotePlan) return;
+
+    if (currentPlanId) {
+      if (isDirty) {
+        writePlannerDraft(currentPlanId, {
+          baseRev: remotePlan?.rev ?? null,
+          name: planName,
+          state,
+        });
+      } else {
+        clearPlannerDraft(currentPlanId);
+      }
+      return;
+    }
+
+    writePlannerDraft(null, {
+      baseRev: null,
+      name: planName,
+      state,
+    });
+  }, [activeDraftKey, currentPlanId, draftCheckedKey, isDirty, planName, remotePlan, state]);
 
   useEffect(() => {
     if (currentPlanId) return;
@@ -241,6 +290,8 @@ export function App({
     setSavedSnapshot(createSavedSnapshot(payload.state, payload.name));
     setPersistenceStatus("saved");
     setShareUrl(createShareUrl(payload.state, payload.id));
+    clearPlannerDraft(null);
+    clearPlannerDraft(payload.id);
     replaceUrlWithPlanId(payload.id);
   }
 
@@ -287,6 +338,7 @@ export function App({
     setSavedSnapshot(createSavedSnapshot(payload.state, payload.name));
     setPersistenceStatus("saved");
     setShareUrl(createShareUrl(payload.state, payload.id));
+    clearPlannerDraft(payload.id);
   }
 
   function loadConflictPlan() {
@@ -298,6 +350,7 @@ export function App({
     setSavedSnapshot(createSavedSnapshot(conflictPlan.state, conflictPlan.name));
     setNextPlanPassword("");
     setClearPlanPassword(false);
+    clearPlannerDraft(conflictPlan.id);
     setConflictPlan(null);
     setPersistenceStatus("saved");
     setPersistenceError("");
@@ -761,12 +814,12 @@ export function App({
         </Sidebar>
 
         <SidebarInset className="max-h-screen overflow-auto bg-canvas p-4 lg:p-5 max-lg:max-h-none md:peer-data-[collapsible=offcanvas]:ml-0">
-          <div className="mb-5 grid items-start gap-3 md:grid-cols-[1fr_minmax(0,48rem)_1fr]">
-            <div className="flex min-w-0 justify-start">
+          <div className="mb-5 grid items-start gap-3 md:grid-cols-[auto_minmax(0,1fr)_auto]">
+            <div className="flex min-h-9 w-9 flex-none justify-start">
               <FloatingSidebarTrigger />
             </div>
             <div
-              className="grid w-full max-w-3xl grid-cols-4 items-stretch overflow-hidden rounded-lg border border-border bg-background/80 max-md:max-w-none max-sm:grid-cols-2"
+              className="grid w-full max-w-3xl justify-self-center grid-cols-4 items-stretch overflow-hidden rounded-lg border border-border bg-background/80 max-md:max-w-none max-sm:grid-cols-2"
               aria-label={t.aria.planStatus}
             >
               <Stat label={t.stats.tables} value={state.tables.length} />
@@ -774,7 +827,7 @@ export function App({
               <Stat label={t.stats.guests} value={state.guests.length} />
               <Stat label={t.stats.open} value={Math.max(0, seats.length - Object.keys(state.assignments).length)} />
             </div>
-            <div className="flex min-w-0 justify-end gap-2">
+            <div className="flex min-w-max flex-none justify-end gap-3">
               <LanguageControl
                 currentLabel={t.language.current}
                 label={t.aria.language}
@@ -1151,6 +1204,129 @@ function isPersistedPlan(payload: unknown): payload is PersistedPlan {
     typeof value.state === "object" &&
     value.state !== null
   );
+}
+
+function readPlannerDraft(planId: string | undefined, baseRev: number | null): PlannerDraft | null {
+  const storage = getLocalStorage();
+  if (!storage) return null;
+
+  try {
+    const raw = storage.getItem(createPlannerDraftKey(planId));
+    return raw ? parsePlannerDraft(JSON.parse(raw) as unknown, planId ?? null, baseRev) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writePlannerDraft(planId: string | null, draft: Pick<PlannerDraft, "baseRev" | "name" | "state">) {
+  const storage = getLocalStorage();
+  if (!storage) return;
+
+  try {
+    const nextDraft: PlannerDraft = {
+      baseRev: draft.baseRev,
+      name: draft.name,
+      planId,
+      state: draft.state,
+      updatedAt: new Date().toISOString(),
+      version: 1,
+    };
+    storage.setItem(createPlannerDraftKey(planId ?? undefined), JSON.stringify(nextDraft));
+  } catch {
+    // Local drafts are best-effort; quota and browser privacy failures should not break editing.
+  }
+}
+
+function clearPlannerDraft(planId: string | null) {
+  const storage = getLocalStorage();
+  if (!storage) return;
+
+  try {
+    storage.removeItem(createPlannerDraftKey(planId ?? undefined));
+  } catch {
+    // Ignore localStorage failures.
+  }
+}
+
+function parsePlannerDraft(value: unknown, expectedPlanId: string | null, expectedBaseRev: number | null): PlannerDraft | null {
+  if (!isRecord(value) || value.version !== 1) return null;
+  const planId = typeof value.planId === "string" ? value.planId : value.planId === null ? null : undefined;
+  if (planId === undefined || planId !== expectedPlanId) return null;
+  const baseRev = typeof value.baseRev === "number" && Number.isInteger(value.baseRev) ? value.baseRev : value.baseRev === null ? null : undefined;
+  if (baseRev === undefined) return null;
+  if (expectedPlanId && expectedBaseRev !== null && baseRev !== expectedBaseRev) return null;
+  if (typeof value.name !== "string" || typeof value.updatedAt !== "string") return null;
+
+  const state = parseDraftPlannerState(value.state);
+  if (!state) return null;
+
+  return {
+    baseRev,
+    name: value.name,
+    planId,
+    state,
+    updatedAt: value.updatedAt,
+    version: 1,
+  };
+}
+
+function parseDraftPlannerState(value: unknown): PlannerState | null {
+  if (!isRecord(value) || !Array.isArray(value.tables) || !Array.isArray(value.guests) || !isStringRecord(value.assignments)) return null;
+  if (!value.tables.every(isDraftTable) || !value.guests.every(isDraftGuest)) return null;
+  return sanitizeAssignments({
+    assignments: value.assignments,
+    guests: value.guests,
+    tables: value.tables,
+  });
+}
+
+function isDraftTable(value: unknown): value is WeddingTable {
+  return (
+    isRecord(value) &&
+    typeof value.id === "string" &&
+    typeof value.name === "string" &&
+    (value.shape === "round" || value.shape === "rectangular") &&
+    isNonNegativeInteger(value.roundSeats) &&
+    isNonNegativeInteger(value.topSeats) &&
+    isNonNegativeInteger(value.rightSeats) &&
+    isNonNegativeInteger(value.bottomSeats) &&
+    isNonNegativeInteger(value.leftSeats)
+  );
+}
+
+function isDraftGuest(value: unknown): value is Guest {
+  return isRecord(value) && typeof value.id === "string" && typeof value.name === "string" && typeof value.group === "string" && typeof value.dietary === "string";
+}
+
+function isNonNegativeInteger(value: unknown) {
+  return typeof value === "number" && Number.isInteger(value) && value >= 0;
+}
+
+function hasUrlStateQuery() {
+  if (typeof window === "undefined") return false;
+  const params = new URLSearchParams(window.location.search);
+  return params.has(STATE_QUERY_KEY) || params.has(LEGACY_STATE_QUERY_KEY);
+}
+
+function createPlannerDraftKey(planId: string | undefined) {
+  return `wedding-table-setting:draft:${planId ?? "local"}`;
+}
+
+function getLocalStorage() {
+  if (typeof window === "undefined") return null;
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isStringRecord(value: unknown): value is Record<string, string> {
+  return isRecord(value) && Object.values(value).every((item) => typeof item === "string");
 }
 
 function createSavedSnapshot(state: PlannerState, name: string) {
