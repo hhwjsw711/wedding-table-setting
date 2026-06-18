@@ -11,3 +11,4 @@ skills-lock.json
 convex/_generated/ai/ai-files.state.json
 CLAUDE.md
 public/gallery/*.webp
+.vercel
