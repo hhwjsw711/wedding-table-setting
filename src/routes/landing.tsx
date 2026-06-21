@@ -1,5 +1,13 @@
 import { Link } from "react-router";
 import { useConvexAuth } from "convex/react";
+import {
+  FileSpreadsheet,
+  Globe,
+  GripHorizontal,
+  LayoutGrid,
+  Salad,
+  Share2,
+} from "lucide-react";
 import { useI18n } from "@/i18n";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { WeddingLogo } from "@/components/wedding-logo";
@@ -10,6 +18,9 @@ export function LandingPage() {
 
   const L = t.landing;
   const appLink = isAuthenticated ? "/dashboard" : "/login";
+  const ctaText = isAuthenticated ? L.goToApp : L.startFree;
+
+  const featureIcons = [GripHorizontal, FileSpreadsheet, Salad, Share2, Globe, LayoutGrid];
 
   return (
     <div className="min-h-screen bg-canvas text-foreground antialiased">
@@ -30,7 +41,7 @@ export function LandingPage() {
               <source srcSet="/gallery/hero-1.webp" type="image/webp" />
               <img
                 alt=""
-                className="absolute inset-0 size-full object-cover opacity-30"
+                className="absolute inset-0 size-full object-cover"
                 decoding="async"
                 fetchPriority="high"
                 height="800"
@@ -38,6 +49,7 @@ export function LandingPage() {
                 width="1200"
               />
             </picture>
+            <div className="absolute inset-0 bg-gradient-to-b from-canvas/80 via-canvas/40 to-canvas/90" />
           <div className="relative px-8 pb-12 pt-16 sm:pb-14 sm:pt-24 md:pt-32">
             <p className="mb-6 text-xs font-medium tracking-widest uppercase text-primary">
               {L.heroEyebrow}
@@ -53,7 +65,7 @@ export function LandingPage() {
                 to={appLink}
                 className="inline-flex h-11 items-center gap-2 rounded-full bg-primary px-8 text-sm font-medium text-primary-foreground shadow-sm transition hover:opacity-90"
               >
-                {L.startFree}
+                {ctaText}
               </Link>
             </div>
           </div>
@@ -76,7 +88,7 @@ export function LandingPage() {
                 <picture>
                   <source srcSet={img.webp} type="image/webp" />
                   <img
-                    alt={img.label}
+                    alt={L.galleryAlt}
                     className="aspect-[4/3] w-full object-cover transition duration-300 group-hover:scale-105"
                     decoding="async"
                     height="600"
@@ -99,12 +111,16 @@ export function LandingPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
-            {L.features.map((f) => (
-              <div key={f.name} className="bg-background p-6">
-                <h3 className="mb-2 text-base font-semibold">{f.name}</h3>
-                <p className="text-sm text-muted-foreground">{f.desc}</p>
-              </div>
-            ))}
+            {L.features.map((f, i) => {
+              const Icon = featureIcons[i];
+              return (
+                <div key={f.name} className="bg-background p-6">
+                  {Icon && <Icon className="mb-3 size-5 text-primary" aria-hidden="true" />}
+                  <h3 className="mb-2 text-base font-semibold">{f.name}</h3>
+                  <p className="text-sm text-muted-foreground">{f.desc}</p>
+                </div>
+              );
+            })}
           </div>
         </section>
 
@@ -145,7 +161,7 @@ export function LandingPage() {
               to={appLink}
               className="mt-10 inline-flex h-12 w-64 items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground transition hover:opacity-90"
             >
-              {L.startFree}
+              {ctaText}
             </Link>
             <p className="mt-4 max-w-lg text-xs text-muted-foreground">{L.pricingTerms}</p>
           </div>
@@ -158,14 +174,14 @@ export function LandingPage() {
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{L.faqTitle}</h2>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2">
+          <dl className="grid gap-6 sm:grid-cols-2">
             {L.faq.map((item) => (
               <div key={item.q}>
                 <dt className="mb-1 text-sm font-semibold">{item.q}</dt>
                 <dd className="text-sm text-muted-foreground">{item.a}</dd>
               </div>
             ))}
-          </div>
+          </dl>
         </section>
 
         {/* ============ Footer ============ */}
@@ -177,9 +193,9 @@ export function LandingPage() {
               <p className="text-xs text-muted-foreground">{L.footerTagline}</p>
             </div>
           </div>
-          <p className="text-xs text-muted-foreground">
-            <Link to="/login" className="hover:text-primary">{t.auth.login}</Link>
-          </p>
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+            <Link to={isAuthenticated ? "/dashboard" : "/login"} className="hover:text-primary">{isAuthenticated ? L.goToApp : t.auth.login}</Link>
+          </div>
         </footer>
       </main>
     </div>
@@ -187,12 +203,12 @@ export function LandingPage() {
 }
 
 const galleryImages = [
-  { src: "/gallery/round-1.jpg", webp: "/gallery/round-1.webp", label: "圆桌宴会布置" },
-  { src: "/gallery/round-2.jpg", webp: "/gallery/round-2.webp", label: "圆桌宴会布置" },
-  { src: "/gallery/round-3.jpg", webp: "/gallery/round-3.webp", label: "圆桌宴会布置" },
-  { src: "/gallery/round-4.jpg", webp: "/gallery/round-4.webp", label: "圆桌宴会布置" },
-  { src: "/gallery/round-5.jpg", webp: "/gallery/round-5.webp", label: "圆桌宴会布置" },
-  { src: "/gallery/round-6.jpg", webp: "/gallery/round-6.webp", label: "圆桌宴会布置" },
-  { src: "/gallery/round-7.jpg", webp: "/gallery/round-7.webp", label: "圆桌宴会布置" },
-  { src: "/gallery/round-8.jpg", webp: "/gallery/round-8.webp", label: "圆桌宴会布置" },
+  { src: "/gallery/round-1.jpg", webp: "/gallery/round-1.webp" },
+  { src: "/gallery/round-2.jpg", webp: "/gallery/round-2.webp" },
+  { src: "/gallery/round-3.jpg", webp: "/gallery/round-3.webp" },
+  { src: "/gallery/round-4.jpg", webp: "/gallery/round-4.webp" },
+  { src: "/gallery/round-5.jpg", webp: "/gallery/round-5.webp" },
+  { src: "/gallery/round-6.jpg", webp: "/gallery/round-6.webp" },
+  { src: "/gallery/round-7.jpg", webp: "/gallery/round-7.webp" },
+  { src: "/gallery/round-8.jpg", webp: "/gallery/round-8.webp" },
 ];
