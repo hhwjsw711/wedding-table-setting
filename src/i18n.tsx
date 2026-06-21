@@ -23,6 +23,7 @@ export type Messages = {
     importGuests: string;
     saveChanges: string;
     seatByGroup: string;
+    seatByGroupHint: string;
     unseatTable: string;
     share: string;
     back: string;
@@ -58,6 +59,14 @@ export type Messages = {
     seatedGuests: (seated: number, total: number) => string;
     seats: (count: number) => string;
     tables: (count: number) => string;
+  };
+  confirm: {
+    deleteTitle: string;
+    deleteDescription: string;
+    removeTitle: string;
+    removeDescription: string;
+    removeTableTitle: string;
+    removeTableDescription: string;
   };
   csvPlaceholder: string;
   dashboard: {
@@ -135,9 +144,11 @@ export type Messages = {
     heroTitle: string;
     heroTagline: string;
     startFree: string;
+    goToApp: string;
     galleryLabel: string;
     galleryTitle: string;
     galleryLede: string;
+    galleryAlt: string;
     featuresLabel: string;
     featuresTitle: string;
     features: { name: string; desc: string }[];
@@ -170,6 +181,7 @@ const messages: Record<Locale, Messages> = {
       importGuests: "Import Guests",
       saveChanges: "Save",
       seatByGroup: "Seat by Group",
+      seatByGroupHint: "Places each group at the same table when possible, largest groups first. Remaining guests fill available seats.",
       unseatTable: "Clear Table",
       share: "Share",
       back: "Back",
@@ -205,6 +217,14 @@ const messages: Record<Locale, Messages> = {
       seatedGuests: (seated, total) => `${seated}/${total} seated`,
       seats: (count) => `${count} ${count === 1 ? "seat" : "seats"}`,
       tables: (count) => `${count} ${count === 1 ? "table" : "tables"}`,
+    },
+    confirm: {
+      deleteTitle: "Delete banquet?",
+      deleteDescription: "This action cannot be undone.",
+      removeTitle: "Remove guest?",
+      removeDescription: "This guest will be removed from the plan.",
+      removeTableTitle: "Remove table?",
+      removeTableDescription: "This table and its seat assignments will be removed.",
     },
     csvPlaceholder: "name,group,dietary\nAlice Smith,Bride's family,Vegetarian",
     dashboard: {
@@ -283,9 +303,11 @@ const messages: Record<Locale, Messages> = {
       heroTitle: "Wedding Table",
       heroTagline: "The hardest part of wedding planning isn't the venue \u2014 it's the seating chart. Drag, drop, done in five minutes.",
       startFree: "Start Free",
+      goToApp: "Go to Dashboard",
       galleryLabel: "Gallery",
       galleryTitle: "Beautiful Weddings, Perfectly Seated",
       galleryLede: "From round tables to long banquet rows, every layout finds its place.",
+      galleryAlt: "Wedding banquet table setting",
       featuresLabel: "Features",
       featuresTitle: "Everything You Need",
       features: [
@@ -333,6 +355,7 @@ const messages: Record<Locale, Messages> = {
       importGuests: "Importa ospiti",
       saveChanges: "Salva",
       seatByGroup: "Assegna per gruppo",
+      seatByGroupHint: "Assegna ogni gruppo allo stesso tavolo se possibile, dal più grande. I restanti riempiono i posti disponibili.",
       unseatTable: "Libera tavolo",
       share: "Condividi",
       back: "Indietro",
@@ -368,6 +391,14 @@ const messages: Record<Locale, Messages> = {
       seatedGuests: (seated, total) => `${seated}/${total} assegnati`,
       seats: (count) => `${count} ${count === 1 ? "posto" : "posti"}`,
       tables: (count) => `${count} ${count === 1 ? "tavolo" : "tavoli"}`,
+    },
+    confirm: {
+      deleteTitle: "Eliminare banchetto?",
+      deleteDescription: "Questa azione non può essere annullata.",
+      removeTitle: "Rimuovere ospite?",
+      removeDescription: "L'ospite sarà rimosso dal piano.",
+      removeTableTitle: "Rimuovere tavolo?",
+      removeTableDescription: "Il tavolo e le assegnazioni saranno rimossi.",
     },
     csvPlaceholder: "nome,gruppo,dieta\nAlice Rossi,Famiglia,Vegetariano",
     dashboard: {
@@ -445,9 +476,11 @@ const messages: Record<Locale, Messages> = {
       heroTitle: "Wedding Table",
       heroTagline: "La parte pi\u00f9 difficile del matrimonio non \u00e8 la location \u2014 \u00e8 la disposizione dei tavoli. Trascina, rilascia, fatto in cinque minuti.",
       startFree: "Inizia Gratis",
+      goToApp: "Vai alla Dashboard",
       galleryLabel: "Galleria",
       galleryTitle: "Matrimoni Bellissimi, Perfettamente Organizzati",
       galleryLede: "Dai tavoli rotondi alle lunghe file da banchetto, ogni disposizione trova il suo posto.",
+      galleryAlt: "Allestimento tavoli per matrimonio",
       featuresLabel: "Caratteristiche",
       featuresTitle: "Tutto Ci\u00f2 di Cui Hai Bisogno",
       features: [
@@ -495,6 +528,7 @@ const messages: Record<Locale, Messages> = {
       importGuests: "导入宾客",
       saveChanges: "保存",
       seatByGroup: "按组入座",
+      seatByGroupHint: "优先将同组宾客安排在同一桌，大组优先。剩余宾客分配到有空位的餐桌。",
       unseatTable: "清空餐桌",
       share: "分享",
       back: "返回",
@@ -530,6 +564,14 @@ const messages: Record<Locale, Messages> = {
       seatedGuests: (seated, total) => `${seated}/${total} 已入座`,
       seats: (count) => `${count} 个座位`,
       tables: (count) => `${count} 张餐桌`,
+    },
+    confirm: {
+      deleteTitle: "确定删除宴席？",
+      deleteDescription: "此操作无法撤销。",
+      removeTitle: "移除宾客？",
+      removeDescription: "该宾客将被移出方案。",
+      removeTableTitle: "移除餐桌？",
+      removeTableDescription: "该餐桌及其座位分配将被移除。",
     },
     csvPlaceholder: "姓名,组别,饮食\n张三,新娘亲友,素食",
     dashboard: {
@@ -607,9 +649,11 @@ const messages: Record<Locale, Messages> = {
       heroTitle: "婚礼排座",
       heroTagline: "筹备婚礼最头疼的不是选场地，是排座位。拖拽几下，五分钟搞定。",
       startFree: "免费开始",
+      goToApp: "进入工作台",
       galleryLabel: "预览",
       galleryTitle: "每一场婚礼，都值得精心安排",
       galleryLede: "从十人圆桌到长条宴会桌，每种布局都从容应对。",
+      galleryAlt: "婚礼宴会桌席布置",
       featuresLabel: "功能",
       featuresTitle: "功能一览",
       features: [
