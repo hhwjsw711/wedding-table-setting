@@ -44,11 +44,14 @@ export type Messages = {
     removeTable: (name: string) => string;
     shareLink: string;
     sharePlan: string;
+    toggleSidebar: string;
+    clearSearch: string;
   };
   auth: {
     loginTitle: string;
     signupTitle: string;
     email: string;
+    emailPlaceholder: string;
     password: string;
     login: string;
     signup: string;
@@ -85,6 +88,7 @@ export type Messages = {
   empty: {
     allGuestsSeated: string;
     noGuestsFound: string;
+    noGuestsYet: string;
   };
   fields: {
     dietary: string;
@@ -134,6 +138,7 @@ export type Messages = {
   viewer: {
     createYourOwn: string;
     searchPlaceholder: string;
+    seatingChart: string;
     notFound: string;
     notFoundDescription: string;
     invalidLink: string;
@@ -202,11 +207,14 @@ const messages: Record<Locale, Messages> = {
       removeTable: (name) => `Remove "${name}"`,
       shareLink: "Share link",
       sharePlan: "Share this banquet",
+      toggleSidebar: "Toggle Sidebar (Ctrl+B)",
+      clearSearch: "Clear search",
     },
     auth: {
       loginTitle: "Log in",
       signupTitle: "Sign up",
       email: "Email",
+      emailPlaceholder: "name@example.com",
       password: "Password",
       login: "Log in",
       signup: "Sign up",
@@ -243,6 +251,7 @@ const messages: Record<Locale, Messages> = {
     empty: {
       allGuestsSeated: "Everyone has a seat.",
       noGuestsFound: "No guests found.",
+      noGuestsYet: "Add guests in the sidebar, then drag them onto seats.",
     },
     fields: {
       dietary: "Dietary",
@@ -291,6 +300,7 @@ const messages: Record<Locale, Messages> = {
     },
     viewer: {
       createYourOwn: "Create your own banquet",
+      seatingChart: "Seating Chart",
       searchPlaceholder: "Search your name\u2026",
       notFound: "Banquet not found",
       notFoundDescription:
@@ -376,11 +386,14 @@ const messages: Record<Locale, Messages> = {
       removeTable: (name) => `Rimuovi "${name}"`,
       shareLink: "Link di condivisione",
       sharePlan: "Condividi questo banchetto",
+      toggleSidebar: "Attiva/disattiva barra laterale (Ctrl+B)",
+      clearSearch: "Cancella ricerca",
     },
     auth: {
       loginTitle: "Accedi",
       signupTitle: "Registrati",
       email: "Email",
+      emailPlaceholder: "name@example.com",
       password: "Password",
       login: "Accedi",
       signup: "Registrati",
@@ -417,6 +430,7 @@ const messages: Record<Locale, Messages> = {
     empty: {
       allGuestsSeated: "Tutti gli ospiti hanno un posto.",
       noGuestsFound: "Nessun ospite trovato.",
+      noGuestsYet: "Aggiungi ospiti nella barra laterale, poi trascinali sui posti.",
     },
     fields: {
       dietary: "Dieta",
@@ -465,6 +479,7 @@ const messages: Record<Locale, Messages> = {
     },
     viewer: {
       createYourOwn: "Crea il tuo banchetto",
+      seatingChart: "Disposizione Tavoli",
       searchPlaceholder: "Cerca il tuo nome\u2026",
       notFound: "Banchetto non trovato",
       notFoundDescription: "Questo link potrebbe essere scaduto. Chiedi un nuovo link all'organizzatore.",
@@ -549,11 +564,14 @@ const messages: Record<Locale, Messages> = {
       removeTable: (name) => `移除「${name}」`,
       shareLink: "分享链接",
       sharePlan: "分享宴席",
+      toggleSidebar: "切换侧边栏 (Ctrl+B)",
+      clearSearch: "清除搜索",
     },
     auth: {
       loginTitle: "登录",
       signupTitle: "注册",
       email: "邮箱",
+      emailPlaceholder: "name@example.com",
       password: "密码",
       login: "登录",
       signup: "注册",
@@ -590,6 +608,7 @@ const messages: Record<Locale, Messages> = {
     empty: {
       allGuestsSeated: "宾客都已安排好了。",
       noGuestsFound: "没有找到宾客。",
+      noGuestsYet: "在侧边栏添加宾客，然后拖拽到座位上。",
     },
     fields: {
       dietary: "饮食偏好",
@@ -638,6 +657,7 @@ const messages: Record<Locale, Messages> = {
     },
     viewer: {
       createYourOwn: "创建你自己的宴席",
+      seatingChart: "座次表",
       searchPlaceholder: "搜索你的名字…",
       notFound: "未找到宴席",
       notFoundDescription: "分享链接可能已过期，请联系宴席主人获取新链接。",
