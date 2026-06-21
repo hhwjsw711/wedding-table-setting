@@ -1,15 +1,16 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { Plus, LogOut, Pencil, Trash2 } from "lucide-react";
+import { ArrowRight, Calendar, LogOut, Pencil, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { WeddingLogo } from "@/components/wedding-logo";
 import { useI18n } from "@/i18n";
 
 export function DashboardPage() {
@@ -26,6 +27,11 @@ export function DashboardPage() {
   const [editName, setEditName] = useState("");
   const [loading, setLoading] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
+  const sortedPlans = useMemo(
+    () => [...plans].sort((a, b) => b.updatedAt - a.updatedAt),
+    [plans],
+  );
 
   const handleCreate = useCallback(async () => {
     const name = newName.trim();
@@ -73,10 +79,11 @@ export function DashboardPage() {
   );
 
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className="min-h-dvh bg-canvas">
       <div className="mx-auto max-w-3xl px-4 py-8">
         <div className="mb-8 flex items-center justify-between">
-          <div>
+          <div className="flex items-center gap-3">
+            <WeddingLogo className="size-7" />
             <h1 className="text-2xl font-bold text-foreground">{t.dashboard.title}</h1>
           </div>
           <div className="flex items-center gap-2">
@@ -106,11 +113,17 @@ export function DashboardPage() {
             <CardContent className="flex flex-col items-center gap-3 py-12 text-center">
               <p className="text-lg font-semibold text-foreground">{t.dashboard.emptyTitle}</p>
               <p className="text-sm text-muted-foreground">{t.dashboard.emptyDescription}</p>
+              {newName.trim() ? (
+                <Button onClick={handleCreate} disabled={loading}>
+                  <Plus className="mr-2 size-4" />
+                  {t.actions.createFirstPlan}
+                </Button>
+              ) : null}
             </CardContent>
           </Card>
         ) : (
           <div className="grid gap-3">
-            {plans.map((plan) => (
+            {sortedPlans.map((plan) => (
               <Card key={plan._id} className="cursor-pointer hover:border-primary" onClick={() => navigate(`/plan/${plan._id}`)}>
                 <CardHeader className="flex flex-row items-center justify-between p-4">
                   <div className="min-w-0 flex-1">
@@ -130,11 +143,12 @@ export function DashboardPage() {
                     ) : (
                       <CardTitle className="text-base">{plan.name}</CardTitle>
                     )}
-                    <p className="text-xs text-muted-foreground">
-                      {t.dashboard.updatedAt} {new Date(plan.updatedAt).toLocaleDateString()}
+                    <p className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Calendar className="size-3" aria-hidden="true" />
+                      {new Date(plan.updatedAt).toLocaleDateString()}
                     </p>
                   </div>
-                  <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
@@ -158,6 +172,7 @@ export function DashboardPage() {
                       </TooltipTrigger>
                       <TooltipContent>{t.actions.delete}</TooltipContent>
                     </Tooltip>
+                    <ArrowRight className="ml-1 size-4 text-muted-foreground/40" aria-hidden="true" />
                   </div>
                 </CardHeader>
               </Card>

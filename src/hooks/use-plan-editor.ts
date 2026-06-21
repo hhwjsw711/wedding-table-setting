@@ -37,6 +37,15 @@ export function usePlanEditor(planId: string, t: Messages) {
 
   const debounceTimers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
 
+  useEffect(() => {
+    return () => {
+      for (const timer of debounceTimers.current.values()) {
+        clearTimeout(timer);
+      }
+      debounceTimers.current.clear();
+    };
+  }, []);
+
   const updateTable = useCallback(
     (tableId: string, patch: Partial<WeddingTable>) => {
       const existing = debounceTimers.current.get(tableId);

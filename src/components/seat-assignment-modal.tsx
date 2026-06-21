@@ -122,9 +122,9 @@ export function SeatAssignmentModal({
                   <div className="col-span-4 justify-self-end">
                     <DietaryBadges dietary={guest.dietary} />
                   </div>
-                  <em className="col-span-3 text-xs not-italic whitespace-nowrap text-primary max-sm:whitespace-normal">
+                  <span className="col-span-3 text-xs whitespace-nowrap text-primary max-sm:whitespace-normal">
                     {seatedSeat ? `${seatedTable?.name}, ${seatedSeat.label}` : t.statuses.unseated}
-                  </em>
+                  </span>
                 </button>
               </Button>
             );

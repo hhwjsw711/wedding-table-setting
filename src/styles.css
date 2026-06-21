@@ -65,8 +65,14 @@
     background: white !important;
     print-color-adjust: exact;
   }
-  .min-h-screen {
+  .min-h-screen,
+  .min-h-dvh,
+  .max-h-screen {
     min-height: auto !important;
+    max-height: none !important;
+  }
+  [class*="overflow"] {
+    overflow: visible !important;
   }
   [class*="shadow"] {
     box-shadow: none !important;
@@ -76,5 +82,9 @@
   }
   .absolute {
     position: absolute !important;
+  }
+  article,
+  [class*="grid-cols"] > * {
+    break-inside: avoid;
   }
 }

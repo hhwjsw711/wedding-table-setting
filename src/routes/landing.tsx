@@ -23,7 +23,7 @@ export function LandingPage() {
   const featureIcons = [GripHorizontal, FileSpreadsheet, Salad, Share2, Globe, LayoutGrid];
 
   return (
-    <div className="min-h-screen bg-canvas text-foreground antialiased">
+    <div className="min-h-dvh bg-canvas text-foreground antialiased">
       <main className="mx-auto max-w-6xl px-6 pb-24 pt-16 sm:px-8 md:pt-24">
         <div className="mb-8 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5">

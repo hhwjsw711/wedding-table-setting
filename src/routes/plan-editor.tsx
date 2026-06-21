@@ -39,14 +39,14 @@ export function PlanEditorPage() {
   const [shareOpen, setShareOpen] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
 
-  if (!planId) return <div className="flex min-h-screen items-center justify-center bg-canvas"><p className="text-muted-foreground">{t.viewer.invalidLink}</p></div>;
+  if (!planId) return <div className="flex min-h-dvh items-center justify-center bg-canvas"><p className="text-muted-foreground">{t.viewer.invalidLink}</p></div>;
 
   if (plan === undefined || editor.isLoading) {
-    return <div className="flex min-h-screen items-center justify-center bg-canvas"><p className="text-muted-foreground">{t.viewer.loading}</p></div>;
+    return <div className="flex min-h-dvh items-center justify-center bg-canvas"><p className="text-muted-foreground">{t.viewer.loading}</p></div>;
   }
 
   if (plan === null) {
-    return <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-canvas p-4 text-center"><p className="text-lg font-semibold text-foreground">{t.viewer.notFound}</p><Link className="text-sm font-medium text-primary underline" to="/dashboard">{t.actions.back}</Link></div>;
+    return <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-canvas p-4 text-center"><p className="text-lg font-semibold text-foreground">{t.viewer.notFound}</p><Link className="text-sm font-medium text-primary underline" to="/dashboard">{t.actions.back}</Link></div>;
   }
 
   const shareLink = shareUrl || `${window.location.origin}/view/...`;
@@ -77,7 +77,7 @@ export function PlanEditorPage() {
   }
 
   return (
-    <div className="min-h-screen min-w-80 bg-canvas font-sans text-foreground antialiased">
+    <div className="min-h-dvh min-w-80 bg-canvas font-sans text-foreground antialiased">
       <SidebarProvider className="bg-canvas" style={{ "--sidebar-width": "24rem" } as CSSProperties}>
         <Sidebar className="border-border" collapsible="offcanvas">
           <SidebarHeader className="border-b border-border bg-background p-2">
@@ -88,11 +88,15 @@ export function PlanEditorPage() {
                   {t.actions.back}
                 </Link>
               </div>
-              <SidebarTrigger className="flex-none" />
+              <SidebarTrigger className="flex-none" label={t.aria.toggleSidebar} />
             </div>
           </SidebarHeader>
           <SidebarContent className="gap-0 bg-background">
             <SidebarGroup className="border-b border-border p-4 sm:p-5">
+              <div className="mb-3.5 flex items-baseline justify-between">
+                <h2 className="m-0 text-sm leading-tight font-semibold">{t.sections.tables}</h2>
+                <span className="text-xs font-semibold text-muted-foreground">{t.counts.tables(editor.tables.length)}</span>
+              </div>
               <div className="grid gap-2.5">
                 {editor.tables.map((table) => (
                   <TableEditor
@@ -221,7 +225,7 @@ export function PlanEditorPage() {
         <SidebarInset className="max-h-screen overflow-auto bg-canvas p-4 lg:p-5 max-lg:max-h-none md:peer-data-[collapsible=offcanvas]:ml-0">
           <div className="mb-5 grid items-start gap-3 md:grid-cols-[1fr_minmax(0,48rem)_1fr]">
             <div className="flex min-w-0 justify-start">
-              <FloatingSidebarTrigger />
+              <FloatingSidebarTrigger label={t.aria.toggleSidebar} />
             </div>
             <div
               className="grid w-full max-w-3xl grid-cols-4 items-stretch overflow-hidden rounded-lg border border-border bg-background/80 max-md:max-w-none max-sm:grid-cols-2"
@@ -246,6 +250,9 @@ export function PlanEditorPage() {
           </div>
 
           <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-2 2xl:grid-cols-3">
+            {editor.guests.length === 0 && (
+              <p className="col-span-full text-center text-sm text-muted-foreground xl:text-left">{t.empty.noGuestsYet}</p>
+            )}
             {editor.tables.map((table) => (
               <TableView
                 key={table.id}
@@ -298,10 +305,10 @@ export function PlanEditorPage() {
   );
 }
 
-function FloatingSidebarTrigger() {
+function FloatingSidebarTrigger({ label }: { label: string }) {
   const { isMobile, open, openMobile } = useSidebar();
   if (isMobile ? openMobile : open) return null;
-  return <SidebarTrigger className="sticky top-4 z-30 flex-none bg-background shadow-sm [&>svg]:size-3.5 md:fixed md:top-4 md:left-4" />;
+  return <SidebarTrigger className="sticky top-4 z-30 flex-none bg-background shadow-sm [&>svg]:size-3.5" label={label} />;
 }
 
 function ShareControl({

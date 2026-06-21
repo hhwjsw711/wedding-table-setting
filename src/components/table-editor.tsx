@@ -83,7 +83,14 @@ export function TableEditor({
           </Label>
           <Label className="grid gap-1.5">
             <span className="text-xs font-bold text-foreground/80">{t.fields.type}</span>
-            <Select value={table.shape} onValueChange={(value) => onChange({ shape: value as TableShape })}>
+            <Select value={table.shape} onValueChange={(value) => {
+              const shape = value as TableShape;
+              if (shape === "rectangular" && table.topSeats + table.rightSeats + table.bottomSeats + table.leftSeats === 0) {
+                onChange({ shape, topSeats: 0, bottomSeats: 0, leftSeats: 4, rightSeats: 4 });
+              } else {
+                onChange({ shape });
+              }
+            }}>
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>

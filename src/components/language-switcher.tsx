@@ -21,7 +21,6 @@ export function LanguageSwitcher() {
       }}
     >
       <Languages aria-hidden="true" className="size-3.5" />
-      <span className="sr-only">{t.aria.language}</span>
       <span
         aria-hidden="true"
         className="absolute -right-1 -bottom-1 rounded-sm border border-border bg-background px-1 text-[10px] font-black leading-4"
