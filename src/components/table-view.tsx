@@ -36,6 +36,8 @@ function TableViewInner({
   const leftSeats = seats.filter((seat) => seat.side === "left");
   const rightSeats = seats.filter((seat) => seat.side === "right");
   const bottomSeats = seats.filter((seat) => seat.side === "bottom");
+  const hasLeft = leftSeats.length > 0;
+  const hasRight = rightSeats.length > 0;
   const tableName = table.name.trim() || t.defaults.table;
 
   return (
@@ -82,72 +84,78 @@ function TableViewInner({
           ))}
         </div>
       ) : (
-        <div className="grid min-h-0 gap-2.5">
-          {topSeats.length > 0 && (
-            <div className="flex min-h-14 justify-center gap-2">
-              {topSeats.map((seat) => (
-                <SeatButton
-                  assignment={assignments[seat.id]}
-                  guest={guestById.get(assignments[seat.id])}
-                  key={seat.id}
-                  onClear={onClearSeat}
-                  onDrop={onSeatDrop}
-                  onOpen={onOpenSeat}
-                  seat={seat}
-                  t={t}
-                />
-              ))}
+        <div className="mx-auto min-h-72 max-w-md max-sm:min-h-64">
+          <div className="grid min-h-0 gap-2.5">
+            {topSeats.length > 0 && (
+              <div className="flex min-h-14 justify-center gap-2">
+                {topSeats.map((seat) => (
+                  <SeatButton
+                    assignment={assignments[seat.id]}
+                    guest={guestById.get(assignments[seat.id])}
+                    key={seat.id}
+                    onClear={onClearSeat}
+                    onDrop={onSeatDrop}
+                    onOpen={onOpenSeat}
+                    seat={seat}
+                    t={t}
+                  />
+                ))}
+              </div>
+            )}
+            <div className="flex items-stretch gap-2">
+              {hasLeft && (
+                <div className="flex flex-col justify-center gap-2">
+                  {leftSeats.map((seat) => (
+                    <SeatButton
+                      assignment={assignments[seat.id]}
+                      guest={guestById.get(assignments[seat.id])}
+                      key={seat.id}
+                      onClear={onClearSeat}
+                      onDrop={onSeatDrop}
+                      onOpen={onOpenSeat}
+                      seat={seat}
+                      t={t}
+                    />
+                  ))}
+                </div>
+              )}
+              <div className="flex min-h-44 min-w-40 flex-1 items-center justify-center rounded-lg border border-input bg-table-surface px-4 text-center font-extrabold text-secondary-foreground">
+                <span className="max-w-full overflow-hidden text-wrap break-words">{tableName}</span>
+              </div>
+              {hasRight && (
+                <div className="flex flex-col justify-center gap-2">
+                  {rightSeats.map((seat) => (
+                    <SeatButton
+                      assignment={assignments[seat.id]}
+                      guest={guestById.get(assignments[seat.id])}
+                      key={seat.id}
+                      onClear={onClearSeat}
+                      onDrop={onSeatDrop}
+                      onOpen={onOpenSeat}
+                      seat={seat}
+                      t={t}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-          <div className="grid min-h-0 grid-cols-[5rem_minmax(14rem,1fr)_5rem] items-stretch gap-3 max-sm:grid-cols-[4rem_minmax(10rem,1fr)_4rem] max-sm:gap-2">
-            <div className="grid content-center justify-items-center gap-2">
-              {leftSeats.map((seat) => (
-                <SeatButton
-                  assignment={assignments[seat.id]}
-                  guest={guestById.get(assignments[seat.id])}
-                  key={seat.id}
-                  onClear={onClearSeat}
-                  onDrop={onSeatDrop}
-                  onOpen={onOpenSeat}
-                  seat={seat}
-                  t={t}
-                />
-              ))}
-            </div>
-            <div className="flex min-h-44 items-center justify-center rounded-lg border border-input bg-table-surface px-4 text-center font-extrabold text-secondary-foreground">
-              <span className="max-w-full overflow-hidden text-wrap break-words">{tableName}</span>
-            </div>
-            <div className="grid content-center justify-items-center gap-2">
-              {rightSeats.map((seat) => (
-                <SeatButton
-                  assignment={assignments[seat.id]}
-                  guest={guestById.get(assignments[seat.id])}
-                  key={seat.id}
-                  onClear={onClearSeat}
-                  onDrop={onSeatDrop}
-                  onOpen={onOpenSeat}
-                  seat={seat}
-                  t={t}
-                />
-              ))}
-            </div>
+            {bottomSeats.length > 0 && (
+              <div className="flex min-h-14 justify-center gap-2">
+                {bottomSeats.map((seat) => (
+                  <SeatButton
+                    assignment={assignments[seat.id]}
+                    guest={guestById.get(assignments[seat.id])}
+                    key={seat.id}
+                    onClear={onClearSeat}
+                    onDrop={onSeatDrop}
+                    onOpen={onOpenSeat}
+                    seat={seat}
+                    t={t}
+                  />
+                ))}
+              </div>
+            )}
           </div>
-          {bottomSeats.length > 0 && (
-            <div className="flex min-h-14 justify-center gap-2">
-              {bottomSeats.map((seat) => (
-                <SeatButton
-                  assignment={assignments[seat.id]}
-                  guest={guestById.get(assignments[seat.id])}
-                  key={seat.id}
-                  onClear={onClearSeat}
-                  onDrop={onSeatDrop}
-                  onOpen={onOpenSeat}
-                  seat={seat}
-                  t={t}
-                />
-              ))}
-            </div>
-          )}
         </div>
       )}
     </article>
