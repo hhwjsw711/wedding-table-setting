@@ -614,14 +614,15 @@ function addSideSeats(seats: Seat[], table: WeddingTable, side: SeatSide, count:
 }
 
 function parseCsvRows(text: string) {
+  const normalized = text.startsWith("\uFEFF") ? text.slice(1) : text;
   const rows: string[][] = [];
   let row: string[] = [];
   let cell = "";
   let inQuotes = false;
 
-  for (let index = 0; index < text.length; index += 1) {
-    const char = text[index];
-    const next = text[index + 1];
+  for (let index = 0; index < normalized.length; index += 1) {
+    const char = normalized[index];
+    const next = normalized[index + 1];
 
     if (char === '"' && inQuotes && next === '"') {
       cell += '"';

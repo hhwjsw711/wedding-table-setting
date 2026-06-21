@@ -1,4 +1,4 @@
-import { type ChangeEvent, DragEvent, FormEvent, useEffect, useMemo, useState } from "react";
+import { type ChangeEvent, DragEvent, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import type { Messages } from "@/i18n";
@@ -35,6 +35,23 @@ export function usePlanEditor(planId: string, t: Messages) {
   const clearSeatMut = useMutation(api.assignments.clear);
   const clearTableMut = useMutation(api.assignments.clearTable);
 
+  const debounceTimers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
+
+  const updateTable = useCallback(
+    (tableId: string, patch: Partial<WeddingTable>) => {
+      const existing = debounceTimers.current.get(tableId);
+      if (existing) clearTimeout(existing);
+      debounceTimers.current.set(
+        tableId,
+        setTimeout(() => {
+          debounceTimers.current.delete(tableId);
+          void updateTableMut({ tableId: tableId as never, patch } as never);
+        }, 300),
+      );
+    },
+    [updateTableMut],
+  );
+
   const [seatModal, setSeatModal] = useState<SeatModalState>(null);
   const [guestModal, setGuestModal] = useState<GuestEditModalState>(null);
   const [csvText, setCsvText] = useState("");
@@ -70,10 +87,6 @@ export function usePlanEditor(planId: string, t: Messages) {
     const uniqueGroups = new Set(safeGuests.map((guest) => guest.group).filter(Boolean));
     return [...uniqueGroups].sort((a, b) => a.localeCompare(b));
   }, [safeGuests]);
-
-  function updateTable(tableId: string, patch: Partial<WeddingTable>) {
-    void updateTableMut({ tableId: tableId as never, patch } as never);
-  }
 
   async function addTable() {
     const table = createDefaultTable(safeTables.length + 1, t.defaults.table);

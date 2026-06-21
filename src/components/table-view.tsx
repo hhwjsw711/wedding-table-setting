@@ -1,4 +1,4 @@
-import type { DragEvent } from "react";
+import { type DragEvent, memo } from "react";
 
 import { SeatButton } from "@/components/seat-button";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,9 @@ import type { Messages } from "@/i18n";
 import type { Guest, WeddingTable } from "@/planner/types";
 import { createSeatsForTable, getRoundSeatStyle } from "@/planner/utils";
 
-export function TableView({
+export const TableView = memo(TableViewInner);
+
+function TableViewInner({
   assignments,
   guestById,
   onClearSeat,

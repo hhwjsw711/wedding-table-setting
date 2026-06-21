@@ -7,6 +7,7 @@ import { SeatButton } from "@/components/seat-button";
 import { Stat } from "@/components/stat";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { X } from "lucide-react";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useI18n } from "@/i18n";
 import type { Guest, WeddingTable } from "@/planner/types";
@@ -93,19 +94,31 @@ export function PlanViewerPage() {
   return (
     <div className="min-h-screen bg-canvas font-sans text-foreground antialiased">
       <div className="mx-auto max-w-6xl px-4 py-6">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 print:hidden">
           <div>
             <h1 className="text-xl font-bold">{plan.name}</h1>
 
           </div>
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
-            <Input
-              className="w-48"
-              placeholder={t.viewer.searchPlaceholder}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+            <div className="relative w-full min-w-0 max-w-48">
+              <Input
+                className="pr-8"
+                placeholder={t.viewer.searchPlaceholder}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button
+                  className="absolute top-1/2 right-1 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  aria-label="Clear search"
+                >
+                  <X className="size-3.5" aria-hidden="true" />
+                </button>
+              )}
+            </div>
             <Link
               className="text-sm font-medium text-primary underline hover:text-primary/80"
               to="/"
@@ -115,7 +128,7 @@ export function PlanViewerPage() {
           </div>
         </div>
 
-        <div className="mb-6">
+        <div className="mb-6 print:hidden">
           <div
             className="grid w-full max-w-3xl grid-cols-4 items-stretch overflow-hidden rounded-lg border border-border bg-background/80 max-sm:grid-cols-2"
           >
@@ -144,6 +157,7 @@ export function PlanViewerPage() {
                         <SeatButton
                           assignment={assignmentMap[seat.id]}
                           guest={guestById.get(assignmentMap[seat.id])}
+                          highlight={highlightedSeatIds.has(seat.id)}
                           key={seat.id}
                           onClear={() => {}}
                           onDrop={() => {}}
@@ -168,6 +182,7 @@ export function PlanViewerPage() {
                             <SeatButton
                               assignment={assignmentMap[seat.id]}
                               guest={guestById.get(assignmentMap[seat.id])}
+                              highlight={highlightedSeatIds.has(seat.id)}
                               key={seat.id}
                               onClear={() => {}}
                               onDrop={() => {}}
@@ -188,6 +203,7 @@ export function PlanViewerPage() {
                               <SeatButton
                                 assignment={assignmentMap[seat.id]}
                                 guest={guestById.get(assignmentMap[seat.id])}
+                                highlight={highlightedSeatIds.has(seat.id)}
                                 key={seat.id}
                                 onClear={() => {}}
                                 onDrop={() => {}}
@@ -213,6 +229,33 @@ export function PlanViewerPage() {
                               <SeatButton
                                 assignment={assignmentMap[seat.id]}
                                 guest={guestById.get(assignmentMap[seat.id])}
+                                highlight={highlightedSeatIds.has(seat.id)}
+                                key={seat.id}
+                                onClear={() => {}}
+                                onDrop={() => {}}
+                                onOpen={() => {}}
+                                readOnly
+                                seat={seat}
+                                t={t}
+                              />
+                            ))}
+                        </div>
+                      )}
+                      <div className="flex min-h-16 items-center justify-center rounded bg-table-surface">
+                        <p className="text-xs text-muted-foreground">
+                          {seats.filter((s) => s.tableId === table.id && assignmentMap[s.id]).length}/
+                          {table.topSeats + table.rightSeats + table.bottomSeats + table.leftSeats}
+                        </p>
+                      </div>
+                      {table.rightSeats > 0 && (
+                        <div className="flex flex-col gap-1">
+                          {seats
+                            .filter((s) => s.tableId === table.id && s.side === "right")
+                            .map((seat) => (
+                              <SeatButton
+                                assignment={assignmentMap[seat.id]}
+                                guest={guestById.get(assignmentMap[seat.id])}
+                                highlight={highlightedSeatIds.has(seat.id)}
                                 key={seat.id}
                                 onClear={() => {}}
                                 onDrop={() => {}}
@@ -233,6 +276,7 @@ export function PlanViewerPage() {
                             <SeatButton
                               assignment={assignmentMap[seat.id]}
                               guest={guestById.get(assignmentMap[seat.id])}
+                              highlight={highlightedSeatIds.has(seat.id)}
                               key={seat.id}
                               onClear={() => {}}
                               onDrop={() => {}}
@@ -250,7 +294,7 @@ export function PlanViewerPage() {
             ))}
           </div>
 
-          <div className="max-h-[calc(100vh-12rem)] overflow-auto rounded-lg border border-border bg-background p-4">
+          <div className="max-h-[calc(100vh-12rem)] overflow-auto rounded-lg border border-border bg-background p-4 print:hidden">
             <h2 className="mb-3 text-sm font-semibold">{t.sections.guests}</h2>
             <div className="grid gap-1.5">
               {filteredGuests.map((guest) => (

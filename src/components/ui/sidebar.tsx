@@ -265,6 +265,7 @@ function SidebarTrigger({
       variant="ghost"
       size="icon"
       className={cn("size-7", className)}
+      title="Toggle Sidebar (Ctrl+B)"
       onClick={(event) => {
         onClick?.(event)
         toggleSidebar()
@@ -272,7 +273,7 @@ function SidebarTrigger({
       {...props}
     >
       <PanelLeftIcon />
-      <span className="sr-only">Toggle Sidebar</span>
+      <span className="sr-only">Toggle Sidebar (Ctrl+B)</span>
     </Button>
   )
 }

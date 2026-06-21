@@ -6,7 +6,9 @@ import { api } from "../../convex/_generated/api";
 import { Plus, LogOut, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useI18n } from "@/i18n";
 
@@ -23,6 +25,7 @@ export function DashboardPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const handleCreate = useCallback(async () => {
     const name = newName.trim();
@@ -63,6 +66,7 @@ export function DashboardPage() {
     async (planId: string) => {
       try {
         await deletePlan({ planId: planId as never });
+        setConfirmDeleteId(null);
       } catch { /* mutation handles rollback via useQuery */ }
     },
     [deletePlan],
@@ -131,25 +135,47 @@ export function DashboardPage() {
                     </p>
                   </div>
                   <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => {
-                        setEditingId(plan._id);
-                        setEditName(plan.name);
-                      }}
-                    >
-                      <Pencil className="size-4" />
-                    </Button>
-                    <Button size="icon" variant="ghost" onClick={() => handleDelete(plan._id)}>
-                      <Trash2 className="size-4 text-destructive" />
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => {
+                            setEditingId(plan._id);
+                            setEditName(plan.name);
+                          }}
+                        >
+                          <Pencil className="size-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>{t.actions.rename}</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button size="icon" variant="ghost" onClick={() => setConfirmDeleteId(plan._id)}>
+                          <Trash2 className="size-4 text-destructive" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>{t.actions.delete}</TooltipContent>
+                    </Tooltip>
                   </div>
                 </CardHeader>
               </Card>
             ))}
           </div>
         )}
+        <Dialog open={!!confirmDeleteId} onOpenChange={(open) => !open && setConfirmDeleteId(null)}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>{t.confirm.deleteTitle}</DialogTitle>
+              <DialogDescription>{t.confirm.deleteDescription}</DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setConfirmDeleteId(null)}>{t.actions.cancel}</Button>
+              <Button variant="destructive" onClick={() => confirmDeleteId && handleDelete(confirmDeleteId)}>{t.actions.delete}</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

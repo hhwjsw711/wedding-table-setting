@@ -59,3 +59,22 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 }
+
+@media print {
+  body {
+    background: white !important;
+    print-color-adjust: exact;
+  }
+  .min-h-screen {
+    min-height: auto !important;
+  }
+  [class*="shadow"] {
+    box-shadow: none !important;
+  }
+  [class*="border"] {
+    border-color: #ccc !important;
+  }
+  .absolute {
+    position: absolute !important;
+  }
+}

@@ -1,6 +1,6 @@
-import { type CSSProperties, useRef, useState } from "react";
+import { type CSSProperties, useCallback, useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router";
-import { ArrowLeft, Check, Copy, Languages, Plus, Share2 } from "lucide-react";
+import { ArrowLeft, Check, ChevronDown, Copy, Plus, Share2 } from "lucide-react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { GuestChip } from "@/components/guest-chip";
@@ -24,12 +24,14 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
-import { type Locale, type Messages, useI18n } from "@/i18n";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { type Messages, useI18n } from "@/i18n";
 import { usePlanEditor } from "@/hooks/use-plan-editor";
 
 export function PlanEditorPage() {
   const { planId } = useParams<{ planId: string }>();
-  const { locale, setLocale, t } = useI18n();
+  const { t } = useI18n();
   const plan = useQuery(api.plans.getById, { planId: planId as never });
   const editor = usePlanEditor(planId!, t);
   const generateShareToken = useMutation(api.plans.generateShareToken);
@@ -37,14 +39,14 @@ export function PlanEditorPage() {
   const [shareOpen, setShareOpen] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
 
-  if (!planId) return <div className="flex min-h-screen items-center justify-center bg-canvas"><p className="text-muted-foreground">{t.dashboard.emptyDescription}</p></div>;
+  if (!planId) return <div className="flex min-h-screen items-center justify-center bg-canvas"><p className="text-muted-foreground">{t.viewer.invalidLink}</p></div>;
 
   if (plan === undefined || editor.isLoading) {
-    return <div className="flex min-h-screen items-center justify-center bg-canvas"><p className="text-muted-foreground">{t.sections.tables}…</p></div>;
+    return <div className="flex min-h-screen items-center justify-center bg-canvas"><p className="text-muted-foreground">{t.viewer.loading}</p></div>;
   }
 
   if (plan === null) {
-    return <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-canvas p-4 text-center"><p className="text-lg font-semibold text-foreground">{t.dashboard.emptyTitle}</p><Link className="text-sm font-medium text-primary underline" to="/dashboard">{t.actions.back}</Link></div>;
+    return <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-canvas p-4 text-center"><p className="text-lg font-semibold text-foreground">{t.viewer.notFound}</p><Link className="text-sm font-medium text-primary underline" to="/dashboard">{t.actions.back}</Link></div>;
   }
 
   const shareLink = shareUrl || `${window.location.origin}/view/...`;
@@ -155,7 +157,12 @@ export function PlanEditorPage() {
                   <option key={group} value={group} />
                 ))}
               </datalist>
-              <div className="mt-3 grid gap-2.5 border-t border-border pt-3">
+              <details className="group mt-3 grid gap-2.5 border-t border-border pt-3">
+                <summary className="flex cursor-pointer list-none items-center gap-1 text-sm font-bold text-muted-foreground transition-colors hover:text-foreground marker:hidden">
+                  <ChevronDown className="size-4 shrink-0 transition-transform group-open:rotate-180" aria-hidden="true" />
+                  {t.actions.chooseCsv}
+                </summary>
+                <div className="mt-3 grid gap-2.5">
                 <Label className="relative inline-flex min-h-9 cursor-pointer items-center justify-center overflow-hidden rounded-md border border-border bg-background text-sm font-bold transition-colors hover:border-primary hover:text-primary">
                   <Input
                     className="absolute inset-0 h-full opacity-0"
@@ -175,7 +182,8 @@ export function PlanEditorPage() {
                 <Button className="w-full" type="button" onClick={editor.importGuestsFromCsv}>
                   {t.actions.importGuests}
                 </Button>
-              </div>
+                </div>
+              </details>
             </SidebarGroup>
 
             <SidebarGroup className="min-h-56 p-4 sm:p-5">
@@ -183,14 +191,19 @@ export function PlanEditorPage() {
                 <h2 className="m-0 text-sm leading-tight font-semibold">{t.sections.unseated}</h2>
                 <span className="text-xs font-semibold text-muted-foreground">{editor.unseatedGuests.length}</span>
               </div>
-              <Button
-                className="mb-3 w-full"
-                type="button"
-                onClick={editor.autoSeatByGroup}
-                disabled={editor.unseatedGuests.length === 0}
-              >
-                {t.actions.seatByGroup}
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="mb-3 w-full"
+                    type="button"
+                    onClick={editor.autoSeatByGroup}
+                    disabled={editor.unseatedGuests.length === 0}
+                  >
+                    {t.actions.seatByGroup}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{t.actions.seatByGroupHint}</TooltipContent>
+              </Tooltip>
               <div className="grid max-h-96 flex-auto gap-2.5 overflow-auto pr-1">
                 {editor.unseatedGuests.length === 0 ? (
                   <p className="m-0 text-sm text-muted-foreground">{t.empty.allGuestsSeated}</p>
@@ -220,15 +233,7 @@ export function PlanEditorPage() {
               <Stat label={t.stats.open} value={Math.max(0, editor.seats.length - Object.keys(editor.assignments).length)} />
             </div>
             <div className="flex min-w-0 justify-end gap-2">
-              <LanguageControl
-                currentLabel={t.language.current}
-                label={t.aria.language}
-                nextLabel={t.language.next}
-                onToggle={() => {
-                  const order: Locale[] = ["en", "zh", "it"];
-                  setLocale(order[(order.indexOf(locale) + 1) % order.length]);
-                }}
-              />
+              <LanguageSwitcher />
               <ShareControl
                 copied={shareCopied}
                 isOpen={shareOpen}
@@ -315,9 +320,27 @@ function ShareControl({
   url: string;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const handleEsc = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onToggle();
+        buttonRef.current?.focus();
+      }
+    },
+    [onToggle],
+  );
+
+  useEffect(() => {
+    if (!isOpen) return;
+    document.addEventListener("keydown", handleEsc);
+    return () => document.removeEventListener("keydown", handleEsc);
+  }, [isOpen, handleEsc]);
+
   return (
     <div className="relative flex min-w-0 justify-end">
-      <Button aria-expanded={isOpen} aria-label={t.aria.sharePlan} size="icon" type="button" variant="outline" onClick={onToggle}>
+      <Button aria-expanded={isOpen} aria-label={t.aria.sharePlan} ref={buttonRef} size="icon" type="button" variant="outline" onClick={onToggle}>
         <Share2 aria-hidden="true" className="size-3.5" />
       </Button>
       {isOpen ? (
@@ -333,24 +356,3 @@ function ShareControl({
   );
 }
 
-function LanguageControl({
-  currentLabel,
-  label,
-  nextLabel,
-  onToggle,
-}: {
-  currentLabel: string;
-  label: string;
-  nextLabel: string;
-  onToggle: () => void;
-}) {
-  return (
-    <Button aria-label={label} className="relative" title={nextLabel} size="icon" type="button" variant="outline" onClick={onToggle}>
-      <Languages aria-hidden="true" className="size-3.5" />
-      <span className="sr-only">{label}</span>
-      <span aria-hidden="true" className="absolute -right-1 -bottom-1 rounded-sm border border-border bg-background px-1 text-[10px] font-black leading-4">
-        {currentLabel}
-      </span>
-    </Button>
-  );
-}

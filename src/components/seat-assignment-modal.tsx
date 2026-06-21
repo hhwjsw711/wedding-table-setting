@@ -139,6 +139,9 @@ export function SeatAssignmentModal({
             </div>
           ) : null}
         </div>
+        <Button className="w-full" variant="secondary" type="button" onClick={onClose}>
+          {t.actions.cancel}
+        </Button>
       </DialogContent>
     </Dialog>
   );
