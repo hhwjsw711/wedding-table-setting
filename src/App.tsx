@@ -6,6 +6,7 @@ import { AlertTriangle, Check, Copy, Languages, Lock, Plus, Save, Share2 } from 
 import { GuestChip } from "@/components/guest-chip";
 import { GuestEditModal } from "@/components/guest-edit-modal";
 import { SeatAssignmentModal } from "@/components/seat-assignment-modal";
+import { SidebarSection } from "@/components/sidebar-section";
 import { Stat } from "@/components/stat";
 import { TableEditor } from "@/components/table-editor";
 import { TableView } from "@/components/table-view";
@@ -15,7 +16,6 @@ import { Label } from "@/components/ui/label";
 import {
   Sidebar,
   SidebarContent,
-  SidebarGroup,
   SidebarHeader,
   SidebarInset,
   SidebarProvider,
@@ -26,6 +26,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { type Messages, useI18n } from "@/i18n";
 import { createStarterState, LEGACY_STATE_QUERY_KEY, STATE_QUERY_KEY, TABLE_DRAG_MIME } from "@/planner/constants";
+import { createDefaultOpenSidebarSectionIds, type SidebarSectionId } from "@/planner/sidebar-sections";
 import type { Guest, GuestEditModalState, NewGuestForm, PlannerState, SeatModalState, WeddingTable } from "@/planner/types";
 import {
   createDefaultTable,
@@ -86,6 +87,8 @@ export function App({
   const [csvText, setCsvText] = useState("");
   const [newGuest, setNewGuest] = useState<NewGuestForm>({ name: "", group: "", dietary: "" });
   const [openTableEditorIds, setOpenTableEditorIds] = useState<Set<string>>(() => new Set());
+  const [openSidebarSectionIds, setOpenSidebarSectionIds] = useState<Set<SidebarSectionId>>(() => createDefaultOpenSidebarSectionIds(state));
+  const [sidebarSectionsTouched, setSidebarSectionsTouched] = useState(false);
   const [draggedTableId, setDraggedTableId] = useState<string | null>(null);
   const [tableDropTargetId, setTableDropTargetId] = useState<string | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
@@ -196,6 +199,11 @@ export function App({
     // We only want the route id to trigger initial remote loading. Password retries call loadPersistedPlan directly.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialPlanLoad, planId]);
+
+  useEffect(() => {
+    if (sidebarSectionsTouched) return;
+    setOpenSidebarSectionIds(createDefaultOpenSidebarSectionIds(state));
+  }, [sidebarSectionsTouched, state]);
 
   useEffect(() => {
     if (!shareOpen) return;
@@ -417,6 +425,19 @@ export function App({
   function clearTableDragState() {
     setDraggedTableId(null);
     setTableDropTargetId(null);
+  }
+
+  function toggleSidebarSection(sectionId: SidebarSectionId) {
+    setSidebarSectionsTouched(true);
+    setOpenSidebarSectionIds((current) => {
+      const next = new Set(current);
+      if (next.has(sectionId)) {
+        next.delete(sectionId);
+      } else {
+        next.add(sectionId);
+      }
+      return next;
+    });
   }
 
   function addTable() {
@@ -752,14 +773,19 @@ export function App({
           <SidebarHeader className="border-b border-border bg-background p-2">
             <div className="flex min-h-10 items-center justify-between gap-2 px-2">
               <div className="min-w-0">
-                <h2 className="m-0 text-sm leading-tight font-semibold">{t.sections.tables}</h2>
+                <h2 className="m-0 overflow-hidden text-sm leading-tight font-semibold text-ellipsis whitespace-nowrap">{planName}</h2>
                 <span className="text-xs font-semibold text-muted-foreground">{t.counts.seats(seats.length)}</span>
               </div>
               <SidebarTrigger className="flex-none" />
             </div>
           </SidebarHeader>
           <SidebarContent className="gap-0 bg-background">
-            <SidebarGroup className="border-b border-border p-4 sm:p-5">
+            <SidebarSection
+              isOpen={openSidebarSectionIds.has("tables")}
+              meta={String(state.tables.length)}
+              onToggle={() => toggleSidebarSection("tables")}
+              title={t.sections.tables}
+            >
               <div className="grid gap-2.5">
                 {state.tables.map((table) => (
                   <TableEditor
@@ -801,15 +827,35 @@ export function App({
                   {t.actions.addTable}
                 </Button>
               </div>
-            </SidebarGroup>
+            </SidebarSection>
 
-            <SidebarGroup className="border-b border-border p-4 sm:p-5">
-              <div className="mb-3.5 flex items-baseline justify-between">
-                <h2 className="m-0 text-sm leading-tight font-semibold">{t.sections.guests}</h2>
-                <span className="text-xs font-semibold text-muted-foreground">
-                  {t.counts.seatedGuests(state.guests.length - unseatedGuests.length, state.guests.length)}
-                </span>
+            <SidebarSection
+              contentClassName="min-h-44"
+              isOpen={openSidebarSectionIds.has("unseated")}
+              meta={String(unseatedGuests.length)}
+              onToggle={() => toggleSidebarSection("unseated")}
+              title={t.sections.unseated}
+            >
+              <Button className="mb-3 w-full" type="button" onClick={autoSeatByGroup} disabled={unseatedGuests.length === 0}>
+                {t.actions.seatByGroup}
+              </Button>
+              <div className="grid max-h-96 flex-auto gap-2.5 overflow-auto pr-1">
+                {unseatedGuests.length === 0 ? (
+                  <p className="m-0 text-sm text-muted-foreground">{t.empty.allGuestsSeated}</p>
+                ) : (
+                  unseatedGuests.map((guest) => (
+                    <GuestChip key={guest.id} guest={guest} onEdit={openGuestEditor} onRemove={removeGuest} />
+                  ))
+                )}
               </div>
+            </SidebarSection>
+
+            <SidebarSection
+              isOpen={openSidebarSectionIds.has("guests")}
+              meta={t.counts.seatedGuests(state.guests.length - unseatedGuests.length, state.guests.length)}
+              onToggle={() => toggleSidebarSection("guests")}
+              title={t.actions.addGuest}
+            >
               <form className="grid gap-2.5" onSubmit={addGuest}>
                 <Input
                   placeholder={t.fields.name}
@@ -834,7 +880,15 @@ export function App({
                   <option key={group} value={group} />
                 ))}
               </datalist>
-              <div className="mt-3 grid gap-2.5 border-t border-border pt-3">
+            </SidebarSection>
+
+            <SidebarSection
+              isOpen={openSidebarSectionIds.has("import")}
+              meta="CSV"
+              onToggle={() => toggleSidebarSection("import")}
+              title={t.actions.importGuests}
+            >
+              <div className="grid gap-2.5">
                 <Label className="relative inline-flex min-h-9 cursor-pointer items-center justify-center overflow-hidden rounded-md border border-border bg-background text-sm font-bold transition-colors hover:border-primary hover:text-primary">
                   <Input className="absolute inset-0 h-full opacity-0" accept=".csv,text/csv" type="file" onChange={handleCsvFile} />
                   {t.actions.chooseCsv}
@@ -850,26 +904,7 @@ export function App({
                   {t.actions.importGuests}
                 </Button>
               </div>
-            </SidebarGroup>
-
-            <SidebarGroup className="min-h-56 p-4 sm:p-5">
-              <div className="mb-3.5 flex items-baseline justify-between">
-                <h2 className="m-0 text-sm leading-tight font-semibold">{t.sections.unseated}</h2>
-                <span className="text-xs font-semibold text-muted-foreground">{unseatedGuests.length}</span>
-              </div>
-              <Button className="mb-3 w-full" type="button" onClick={autoSeatByGroup} disabled={unseatedGuests.length === 0}>
-                {t.actions.seatByGroup}
-              </Button>
-              <div className="grid max-h-96 flex-auto gap-2.5 overflow-auto pr-1">
-                {unseatedGuests.length === 0 ? (
-                  <p className="m-0 text-sm text-muted-foreground">{t.empty.allGuestsSeated}</p>
-                ) : (
-                  unseatedGuests.map((guest) => (
-                    <GuestChip key={guest.id} guest={guest} onEdit={openGuestEditor} onRemove={removeGuest} />
-                  ))
-                )}
-              </div>
-            </SidebarGroup>
+            </SidebarSection>
           </SidebarContent>
           <SidebarRail />
         </Sidebar>
