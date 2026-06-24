@@ -14,7 +14,9 @@ export type Messages = {
     copyLink: string;
     copied: string;
     edit: string;
+    exportCsv: string;
     exportSeats: string;
+    exportXlsx: string;
     importGuests: string;
     saveChanges: string;
     seatByGroup: string;
@@ -104,7 +106,9 @@ const messages: Record<Locale, Messages> = {
       copyLink: "Copy link",
       copied: "Copied",
       edit: "Edit",
-      exportSeats: "Export CSV",
+      exportCsv: "CSV",
+      exportSeats: "Export",
+      exportXlsx: "XLSX",
       importGuests: "Import Guests",
       saveChanges: "Save Changes",
       seatByGroup: "Seat by Group",
@@ -192,7 +196,9 @@ const messages: Record<Locale, Messages> = {
       copyLink: "Copia link",
       copied: "Copiato",
       edit: "Modifica",
-      exportSeats: "Esporta CSV",
+      exportCsv: "CSV",
+      exportSeats: "Esporta",
+      exportXlsx: "XLSX",
       importGuests: "Importa ospiti",
       saveChanges: "Salva modifiche",
       seatByGroup: "Assegna per gruppo",

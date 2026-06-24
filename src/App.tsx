@@ -1,8 +1,9 @@
 "use client";
 
 import { type CSSProperties, ChangeEvent, DragEvent, FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import { AlertTriangle, Check, Copy, Download, Languages, Lock, Plus, Save, Share2 } from "lucide-react";
+import { AlertTriangle, Check, Copy, Languages, Lock, Plus, Save, Share2 } from "lucide-react";
 
+import { ExportMenu } from "@/components/export-menu";
 import { GuestChip } from "@/components/guest-chip";
 import { GuestEditModal } from "@/components/guest-edit-modal";
 import { SeatAssignmentModal } from "@/components/seat-assignment-modal";
@@ -116,6 +117,7 @@ export function App({
   const [persistenceError, setPersistenceError] = useState(() => resolveInitialPersistenceError(initialPlanLoad));
   const [conflictPlan, setConflictPlan] = useState<PersistedPlan | null>(null);
   const [draftCheckedKey, setDraftCheckedKey] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   const seats = useMemo(() => state.tables.flatMap((table) => createSeatsForTable(table, t.seats)), [state.tables, t.seats]);
   const seatById = useMemo(() => new Map(seats.map((seat) => [seat.id, seat])), [seats]);
@@ -719,18 +721,52 @@ export function App({
     openSharePanel();
   }
 
-  function exportSeatConfiguration() {
+  function exportSeatConfigurationCsv() {
     const csv = createSeatConfigurationCsv(state, t.seats, t.defaults.table);
     const blob = new Blob([`\ufeff${csv}`], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
 
     link.href = url;
-    link.download = `${createCsvFilename(planName)}.csv`;
+    link.download = `${createExportFilename(planName)}.csv`;
     document.body.append(link);
     link.click();
     link.remove();
     window.setTimeout(() => URL.revokeObjectURL(url), 0);
+  }
+
+  async function exportSeatConfigurationXlsx() {
+    setIsExporting(true);
+
+    try {
+      const response = await fetch("/api/export", {
+        body: JSON.stringify({ name: planName, state }),
+        headers: { "content-type": "application/json" },
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        setPersistenceError("Could not export this seating plan.");
+        setPersistenceStatus("error");
+        return;
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = `${createExportFilename(planName)}.xlsx`;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    } catch {
+      setPersistenceError("Could not export this seating plan.");
+      setPersistenceStatus("error");
+    } finally {
+      setIsExporting(false);
+    }
   }
 
   const modalSeat = seatModal ? seatById.get(seatModal.seatId) : undefined;
@@ -945,10 +981,12 @@ export function App({
                 nextLabel={t.language.next}
                 onToggle={() => setLocale(locale === "it" ? "en" : "it")}
               />
-              <Button type="button" variant="outline" onClick={exportSeatConfiguration}>
-                <Download aria-hidden="true" className="size-4" />
-                <span className="max-sm:sr-only">{t.actions.exportSeats}</span>
-              </Button>
+              <ExportMenu
+                isExportingXlsx={isExporting}
+                labels={{ csv: t.actions.exportCsv, export: t.actions.exportSeats, xlsx: t.actions.exportXlsx }}
+                onExportCsv={exportSeatConfigurationCsv}
+                onExportXlsx={() => void exportSeatConfigurationXlsx()}
+              />
               <Button
                 className="relative"
                 disabled={isBusy || (remotePlan ? !isDirty && persistenceStatus === "saved" : false)}
@@ -1466,7 +1504,7 @@ function createPlanSlug(value: string) {
   return createEditablePlanSlug(value).replace(/^-+|-+$/g, "");
 }
 
-function createCsvFilename(value: string) {
+function createExportFilename(value: string) {
   return (
     createEditablePlanSlug(value)
       .replace(/^-+|-+$/g, "")
