@@ -195,9 +195,9 @@ function addNotes(worksheet: ExcelJS.Worksheet, rowNumber: number) {
   worksheet.mergeCells(rowNumber, 1, rowNumber, 10);
   const cell = worksheet.getCell(rowNumber, 1);
   cell.value = [
-    "* per ogni tavolo considerare 20/22 ospiti",
-    "* decidere in che posizione saranno seduti gli sposi",
-    "* inserire i nomi di tutti gli ospiti al posto delle scritta guest n.x",
+    "* consider 20/22 guests per table",
+    "* decide where the newlyweds will sit",
+    "* fill in all guest names in place of guest n.x",
   ].join("\n");
   cell.fill = solidFill(colors.note);
   cell.font = { name: "Arial", size: 10, color: { argb: "FF1D2A36" } };
@@ -206,7 +206,7 @@ function addNotes(worksheet: ExcelJS.Worksheet, rowNumber: number) {
 }
 
 function addGuestListSheet(workbook: ExcelJS.Workbook, state: PlannerState, planName: string) {
-  const worksheet = workbook.addWorksheet("Lista Ospiti", {
+  const worksheet = workbook.addWorksheet("Guest List", {
     pageSetup: {
       fitToPage: false,
       fitToWidth: 1,
