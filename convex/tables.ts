@@ -82,6 +82,11 @@ export const duplicate = mutation({
     const source = await ctx.db.get(args.sourceTableId);
     if (!source || source.planId !== args.planId) throw new Error("Source table not found");
 
+    const existingTables = await ctx.db
+      .query("tables")
+      .withIndex("by_planId", (q) => q.eq("planId", args.planId))
+      .collect();
+
     return ctx.db.insert("tables", {
       planId: args.planId,
       name: args.name,
@@ -91,6 +96,7 @@ export const duplicate = mutation({
       rightSeats: source.rightSeats,
       bottomSeats: source.bottomSeats,
       leftSeats: source.leftSeats,
+      order: existingTables.length,
     });
   },
 });

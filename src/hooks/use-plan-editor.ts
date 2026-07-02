@@ -8,7 +8,6 @@ import { type SidebarSectionId, createDefaultOpenSidebarSectionIds } from "@/pla
 import type { Guest, GuestEditModalState, NewGuestForm, SeatModalState, WeddingTable } from "@/planner/types";
 import {
   createDefaultTable,
-  createId,
   createSeatsForTable,
   createSeatConfigurationCsv,
   groupGuests,
@@ -334,15 +333,7 @@ export function usePlanEditor(planId: string, t: Messages) {
   function exportSeatConfigurationCsv() {
     const state = { tables: safeTables, guests: safeGuests, assignments: assignmentMap };
     const csv = createSeatConfigurationCsv(state, t.seats, t.defaults.table);
-    const blob = new Blob([`\ufeff${csv}`], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${exportFilename(safeTables, t.defaults.table)}.csv`;
-    document.body.append(link);
-    link.click();
-    link.remove();
-    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    downloadBlob(new Blob([`\ufeff${csv}`], { type: "text/csv;charset=utf-8" }), `${exportFilename(safeTables, t.defaults.table)}.csv`);
   }
 
   async function exportToXlsx() {
@@ -352,17 +343,12 @@ export function usePlanEditor(planId: string, t: Messages) {
       const state = { tables: safeTables, guests: safeGuests, assignments: assignmentMap };
       const workbook = await createSeatingPlanWorkbook({ planName: exportFilename(safeTables, t.defaults.table), state });
       const buffer = await workbook.xlsx.writeBuffer();
-      const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `${exportFilename(safeTables, t.defaults.table)}.xlsx`;
-      document.body.append(link);
-      link.click();
-      link.remove();
-      window.setTimeout(() => URL.revokeObjectURL(url), 0);
+      downloadBlob(
+        new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }),
+        `${exportFilename(safeTables, t.defaults.table)}.xlsx`,
+      );
     } catch {
-      // silently handle export error
+      console.error("Failed to export XLSX seating plan");
     } finally {
       setIsExporting(false);
     }
@@ -427,6 +413,17 @@ export function usePlanEditor(planId: string, t: Messages) {
     exportSeatConfigurationCsv,
     exportToXlsx,
   };
+}
+
+function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
 function exportFilename(tables: WeddingTable[], tableFallback: string) {

@@ -25,7 +25,6 @@ const TABLES_PER_ROW = 6;
 const TABLE_BLOCK_WIDTH = 4;
 const MIN_SEATS_PER_SIDE = 11;
 const TOP_MARGIN_ROWS = 3;
-const SECTION_HEADER_HEIGHT = 8;
 const SECTION_FOOTER_ROWS = 8;
 
 const colors = {
