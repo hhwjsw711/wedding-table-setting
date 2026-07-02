@@ -23,6 +23,7 @@ export default defineSchema({
     rightSeats: v.float64(),
     bottomSeats: v.float64(),
     leftSeats: v.float64(),
+    order: v.optional(v.float64()),
   }).index("by_planId", ["planId"]),
 
   guests: defineTable({

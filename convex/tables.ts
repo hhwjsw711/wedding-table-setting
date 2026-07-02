@@ -8,10 +8,11 @@ export const list = query({
     if (!userId) return [];
     const plan = await ctx.db.get(args.planId);
     if (!plan || plan.userId !== userId) return [];
-    return ctx.db
+    const tables = await ctx.db
       .query("tables")
       .withIndex("by_planId", (q) => q.eq("planId", args.planId))
       .collect();
+    return tables.sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || a._creationTime - b._creationTime);
   },
 });
 
@@ -20,10 +21,11 @@ export const listPublic = query({
   handler: async (ctx, args) => {
     const plan = await ctx.db.get(args.planId);
     if (!plan || plan.shareToken !== args.shareToken) return [];
-    return ctx.db
+    const tables = await ctx.db
       .query("tables")
       .withIndex("by_planId", (q) => q.eq("planId", args.planId))
       .collect();
+    return tables.sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || a._creationTime - b._creationTime);
   },
 });
 
@@ -46,6 +48,11 @@ export const create = mutation({
 
     if (args.name.length > 100) throw new Error("Name too long");
 
+    const existingTables = await ctx.db
+      .query("tables")
+      .withIndex("by_planId", (q) => q.eq("planId", args.planId))
+      .collect();
+
     return ctx.db.insert("tables", {
       planId: args.planId,
       name: args.name,
@@ -55,6 +62,7 @@ export const create = mutation({
       rightSeats: args.rightSeats,
       bottomSeats: args.bottomSeats,
       leftSeats: args.leftSeats,
+      order: existingTables.length,
     });
   },
 });
@@ -159,6 +167,26 @@ export const remove = mutation({
         .map((a) => ctx.db.delete(a._id)),
       ctx.db.delete(args.tableId),
     ]);
+  },
+});
+
+export const reorder = mutation({
+  args: {
+    planId: v.id("plans"),
+    orderedTableIds: v.array(v.id("tables")),
+  },
+  handler: async (ctx, args) => {
+    const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
+    if (!userId) throw new Error("Not authenticated");
+    const plan = await ctx.db.get(args.planId);
+    if (!plan || plan.userId !== userId) throw new Error("Not authorized");
+
+    for (let i = 0; i < args.orderedTableIds.length; i++) {
+      const tableId = args.orderedTableIds[i];
+      const table = await ctx.db.get(tableId);
+      if (!table || table.planId !== args.planId) continue;
+      await ctx.db.patch(tableId, { order: i });
+    }
   },
 });
 

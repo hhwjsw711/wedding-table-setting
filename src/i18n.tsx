@@ -20,6 +20,9 @@ export type Messages = {
     copyLink: string;
     copied: string;
     edit: string;
+    exportCsv: string;
+    exportSeats: string;
+    exportXlsx: string;
     importGuests: string;
     saveChanges: string;
     seatByGroup: string;
@@ -40,6 +43,7 @@ export type Messages = {
     language: string;
     nameForTable: (name: string) => string;
     planStatus: string;
+    reorderTable: (name: string) => string;
     removeGuest: (name: string) => string;
     removeTable: (name: string) => string;
     shareLink: string;
@@ -183,6 +187,9 @@ const messages: Record<Locale, Messages> = {
       copyLink: "Copy Link",
       copied: "Copied",
       edit: "Edit",
+      exportCsv: "CSV",
+      exportSeats: "Export",
+      exportXlsx: "XLSX",
       importGuests: "Import Guests",
       saveChanges: "Save",
       seatByGroup: "Seat by Group",
@@ -203,6 +210,7 @@ const messages: Record<Locale, Messages> = {
       language: "Switch language",
       nameForTable: (name) => `Name for "${name}"`,
       planStatus: "Banquet overview",
+      reorderTable: (name) => `Drag to reorder "${name}"`,
       removeGuest: (name) => `Remove "${name}"`,
       removeTable: (name) => `Remove "${name}"`,
       shareLink: "Share link",
@@ -362,6 +370,9 @@ const messages: Record<Locale, Messages> = {
       copyLink: "Copia link",
       copied: "Copiato",
       edit: "Modifica",
+      exportCsv: "CSV",
+      exportSeats: "Esporta",
+      exportXlsx: "XLSX",
       importGuests: "Importa ospiti",
       saveChanges: "Salva",
       seatByGroup: "Assegna per gruppo",
@@ -382,6 +393,7 @@ const messages: Record<Locale, Messages> = {
       language: "Cambia lingua",
       nameForTable: (name) => `Nome per "${name}"`,
       planStatus: "Panoramica banchetto",
+      reorderTable: (name) => `Trascina per riordinare "${name}"`,
       removeGuest: (name) => `Rimuovi "${name}"`,
       removeTable: (name) => `Rimuovi "${name}"`,
       shareLink: "Link di condivisione",
@@ -540,6 +552,9 @@ const messages: Record<Locale, Messages> = {
       copyLink: "复制链接",
       copied: "已复制",
       edit: "编辑",
+      exportCsv: "CSV",
+      exportSeats: "导出",
+      exportXlsx: "XLSX",
       importGuests: "导入宾客",
       saveChanges: "保存",
       seatByGroup: "按组入座",
@@ -560,6 +575,7 @@ const messages: Record<Locale, Messages> = {
       language: "切换语言",
       nameForTable: (name) => `为「${name}」命名`,
       planStatus: "宴席概况",
+      reorderTable: (name) => `拖拽重新排序「${name}」`,
       removeGuest: (name) => `移除「${name}」`,
       removeTable: (name) => `移除「${name}」`,
       shareLink: "分享链接",

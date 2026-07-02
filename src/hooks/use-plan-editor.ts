@@ -2,15 +2,18 @@ import { type ChangeEvent, DragEvent, FormEvent, useCallback, useEffect, useMemo
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import type { Messages } from "@/i18n";
+import { TABLE_DRAG_MIME } from "@/planner/constants";
+import { DND_GUEST_TYPE } from "@/planner/dnd";
+import { type SidebarSectionId, createDefaultOpenSidebarSectionIds } from "@/planner/sidebar-sections";
 import type { Guest, GuestEditModalState, NewGuestForm, SeatModalState, WeddingTable } from "@/planner/types";
 import {
   createDefaultTable,
   createId,
   createSeatsForTable,
+  createSeatConfigurationCsv,
   groupGuests,
   parseGuestsCsv,
 } from "@/planner/utils";
-import { DND_GUEST_TYPE } from "@/planner/dnd";
 
 type AssignmentDoc = {
   _id: string;
@@ -34,6 +37,7 @@ export function usePlanEditor(planId: string, t: Messages) {
   const assignGuestMut = useMutation(api.assignments.assign);
   const clearSeatMut = useMutation(api.assignments.clear);
   const clearTableMut = useMutation(api.assignments.clearTable);
+  const reorderTablesMut = useMutation(api.tables.reorder);
 
   const debounceTimers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
 
@@ -45,27 +49,6 @@ export function usePlanEditor(planId: string, t: Messages) {
       debounceTimers.current.clear();
     };
   }, []);
-
-  const updateTable = useCallback(
-    (tableId: string, patch: Partial<WeddingTable>) => {
-      const existing = debounceTimers.current.get(tableId);
-      if (existing) clearTimeout(existing);
-      debounceTimers.current.set(
-        tableId,
-        setTimeout(() => {
-          debounceTimers.current.delete(tableId);
-          void updateTableMut({ tableId: tableId as never, patch } as never);
-        }, 300),
-      );
-    },
-    [updateTableMut],
-  );
-
-  const [seatModal, setSeatModal] = useState<SeatModalState>(null);
-  const [guestModal, setGuestModal] = useState<GuestEditModalState>(null);
-  const [csvText, setCsvText] = useState("");
-  const [newGuest, setNewGuest] = useState<NewGuestForm>({ name: "", group: "", dietary: "" });
-  const [openTableEditorIds, setOpenTableEditorIds] = useState<Set<string>>(new Set());
 
   const safeTables: WeddingTable[] = useMemo(
     () => (tableDocs ?? []).map((d) => ({ ...d, id: d._id as string })) as WeddingTable[],
@@ -96,6 +79,102 @@ export function usePlanEditor(planId: string, t: Messages) {
     const uniqueGroups = new Set(safeGuests.map((guest) => guest.group).filter(Boolean));
     return [...uniqueGroups].sort((a, b) => a.localeCompare(b));
   }, [safeGuests]);
+
+  const [seatModal, setSeatModal] = useState<SeatModalState>(null);
+  const [guestModal, setGuestModal] = useState<GuestEditModalState>(null);
+  const [csvText, setCsvText] = useState("");
+  const [newGuest, setNewGuest] = useState<NewGuestForm>({ name: "", group: "", dietary: "" });
+  const [openTableEditorIds, setOpenTableEditorIds] = useState<Set<string>>(new Set());
+  const [openSidebarSectionIds, setOpenSidebarSectionIds] = useState<Set<SidebarSectionId>>(() => {
+    const state = { tables: safeTables, guests: safeGuests, assignments: assignmentMap };
+    return createDefaultOpenSidebarSectionIds(state);
+  });
+  const [sidebarSectionsTouched, setSidebarSectionsTouched] = useState(false);
+  const [draggedTableId, setDraggedTableId] = useState<string | null>(null);
+  const [tableDropTargetId, setTableDropTargetId] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
+
+  useEffect(() => {
+    if (sidebarSectionsTouched) return;
+    setOpenSidebarSectionIds(createDefaultOpenSidebarSectionIds({ tables: safeTables, guests: safeGuests, assignments: assignmentMap }));
+  }, [sidebarSectionsTouched, safeTables, safeGuests, assignmentMap]);
+
+  const updateTable = useCallback(
+    (tableId: string, patch: Partial<WeddingTable>) => {
+      const existing = debounceTimers.current.get(tableId);
+      if (existing) clearTimeout(existing);
+      debounceTimers.current.set(
+        tableId,
+        setTimeout(() => {
+          debounceTimers.current.delete(tableId);
+          void updateTableMut({ tableId: tableId as never, patch } as never);
+        }, 300),
+      );
+    },
+    [updateTableMut],
+  );
+
+  function moveTable(tableId: string, direction: -1 | 1) {
+    const sourceIndex = safeTables.findIndex((table) => table.id === tableId);
+    const targetIndex = sourceIndex + direction;
+    if (sourceIndex < 0 || targetIndex < 0 || targetIndex >= safeTables.length) return;
+
+    const orderedIds = [...safeTables.map((t) => t.id)];
+    const [id] = orderedIds.splice(sourceIndex, 1);
+    orderedIds.splice(targetIndex, 0, id);
+    void reorderTablesMut({ planId: planId as never, orderedTableIds: orderedIds } as never);
+  }
+
+  function reorderTables(draggedId: string, targetId: string) {
+    if (draggedId === targetId) return;
+
+    const sourceIndex = safeTables.findIndex((table) => table.id === draggedId);
+    const targetIndex = safeTables.findIndex((table) => table.id === targetId);
+    if (sourceIndex < 0 || targetIndex < 0 || sourceIndex === targetIndex) return;
+
+    const orderedIds = [...safeTables.map((t) => t.id)];
+    const [id] = orderedIds.splice(sourceIndex, 1);
+    orderedIds.splice(targetIndex, 0, id);
+    void reorderTablesMut({ planId: planId as never, orderedTableIds: orderedIds } as never);
+
+    setDraggedTableId(null);
+    setTableDropTargetId(null);
+  }
+
+  function handleTableDragOver(event: DragEvent<HTMLElement>, targetId: string) {
+    const isTableDrag = Array.from(event.dataTransfer.types).includes(TABLE_DRAG_MIME);
+    if (!draggedTableId || draggedTableId === targetId || !isTableDrag) return;
+
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+    setTableDropTargetId((current) => (current === targetId ? current : targetId));
+  }
+
+  function handleTableDrop(event: DragEvent<HTMLElement>, targetId: string) {
+    const sourceId = event.dataTransfer.getData(TABLE_DRAG_MIME);
+    if (!sourceId) return;
+
+    event.preventDefault();
+    reorderTables(sourceId, targetId);
+  }
+
+  function clearTableDragState() {
+    setDraggedTableId(null);
+    setTableDropTargetId(null);
+  }
+
+  function toggleSidebarSection(sectionId: SidebarSectionId) {
+    setSidebarSectionsTouched(true);
+    setOpenSidebarSectionIds((current) => {
+      const next = new Set(current);
+      if (next.has(sectionId)) {
+        next.delete(sectionId);
+      } else {
+        next.add(sectionId);
+      }
+      return next;
+    });
+  }
 
   async function addTable() {
     const table = createDefaultTable(safeTables.length + 1, t.defaults.table);
@@ -252,6 +331,43 @@ export function usePlanEditor(planId: string, t: Messages) {
     if (guestId) assignGuestToSeat(guestId, seatId);
   }
 
+  function exportSeatConfigurationCsv() {
+    const state = { tables: safeTables, guests: safeGuests, assignments: assignmentMap };
+    const csv = createSeatConfigurationCsv(state, t.seats, t.defaults.table);
+    const blob = new Blob([`\ufeff${csv}`], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${exportFilename(safeTables, t.defaults.table)}.csv`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+  }
+
+  async function exportToXlsx() {
+    setIsExporting(true);
+    try {
+      const { createSeatingPlanWorkbook } = await import("@/planner/export-workbook");
+      const state = { tables: safeTables, guests: safeGuests, assignments: assignmentMap };
+      const workbook = await createSeatingPlanWorkbook({ planName: exportFilename(safeTables, t.defaults.table), state });
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${exportFilename(safeTables, t.defaults.table)}.xlsx`;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    } catch {
+      // silently handle export error
+    } finally {
+      setIsExporting(false);
+    }
+  }
+
   const modalSeat = seatModal ? seatById.get(seatModal.seatId) : undefined;
   const modalTable = modalSeat ? safeTables.find((table) => table.id === modalSeat.tableId) : undefined;
   const modalAssignedGuest = modalSeat ? guestById.get(assignmentMap[modalSeat.id]) : undefined;
@@ -277,6 +393,13 @@ export function usePlanEditor(planId: string, t: Messages) {
     setNewGuest,
     openTableEditorIds,
     setOpenTableEditorIds,
+    openSidebarSectionIds,
+    setOpenSidebarSectionIds,
+    draggedTableId,
+    setDraggedTableId,
+    tableDropTargetId,
+    setTableDropTargetId,
+    isExporting,
     modalSeat,
     modalTable,
     modalAssignedGuest,
@@ -296,7 +419,19 @@ export function usePlanEditor(planId: string, t: Messages) {
     saveGuest,
     autoSeatByGroup,
     onSeatDrop,
+    moveTable,
+    handleTableDragOver,
+    handleTableDrop,
+    clearTableDragState,
+    toggleSidebarSection,
+    exportSeatConfigurationCsv,
+    exportToXlsx,
   };
+}
+
+function exportFilename(tables: WeddingTable[], tableFallback: string) {
+  const name = tables[0]?.name?.trim() || tableFallback || "wedding-seating-plan";
+  return name.slice(0, 48).replace(/[<>:"/\\|?*\x00-\x1f]/g, "-") || "wedding-seating-plan";
 }
 
 function createDuplicateTableName(name: string, tables: WeddingTable[], copySuffix: string) {

@@ -1,11 +1,13 @@
 import { type CSSProperties, useCallback, useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router";
-import { ArrowLeft, Check, ChevronDown, Copy, Plus, Share2 } from "lucide-react";
+import { ArrowLeft, Check, Copy, Plus, Share2 } from "lucide-react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { ExportMenu } from "@/components/export-menu";
 import { GuestChip } from "@/components/guest-chip";
 import { GuestEditModal } from "@/components/guest-edit-modal";
 import { SeatAssignmentModal } from "@/components/seat-assignment-modal";
+import { SidebarSection } from "@/components/sidebar-section";
 import { Stat } from "@/components/stat";
 import { TableEditor } from "@/components/table-editor";
 import { TableView } from "@/components/table-view";
@@ -15,7 +17,6 @@ import { Label } from "@/components/ui/label";
 import {
   Sidebar,
   SidebarContent,
-  SidebarGroup,
   SidebarHeader,
   SidebarInset,
   SidebarProvider,
@@ -83,27 +84,32 @@ export function PlanEditorPage() {
           <SidebarHeader className="border-b border-border bg-background p-2">
             <div className="flex min-h-10 items-center justify-between gap-2 px-2">
               <div className="min-w-0">
-                <Link className="flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-primary" to="/dashboard">
-                  <ArrowLeft className="size-3" />
-                  {t.actions.back}
-                </Link>
+                <h2 className="m-0 overflow-hidden text-sm leading-tight font-semibold text-ellipsis whitespace-nowrap">{plan.name}</h2>
               </div>
               <SidebarTrigger className="flex-none" label={t.aria.toggleSidebar} />
             </div>
           </SidebarHeader>
           <SidebarContent className="gap-0 bg-background">
-            <SidebarGroup className="border-b border-border p-4 sm:p-5">
-              <div className="mb-3.5 flex items-baseline justify-between">
-                <h2 className="m-0 text-sm leading-tight font-semibold">{t.sections.tables}</h2>
-                <span className="text-xs font-semibold text-muted-foreground">{t.counts.tables(editor.tables.length)}</span>
-              </div>
+            <SidebarSection
+              isOpen={editor.openSidebarSectionIds.has("tables")}
+              meta={String(editor.tables.length)}
+              onToggle={() => editor.toggleSidebarSection("tables")}
+              title={t.sections.tables}
+            >
               <div className="grid gap-2.5">
                 {editor.tables.map((table) => (
                   <TableEditor
                     key={table.id}
+                    isDragging={editor.draggedTableId === table.id}
+                    isDropTarget={editor.tableDropTargetId === table.id}
                     isOpen={editor.openTableEditorIds.has(table.id)}
                     onChange={(patch) => editor.updateTable(table.id, patch)}
+                    onDragEnd={editor.clearTableDragState}
+                    onDragOver={(event) => editor.handleTableDragOver(event, table.id)}
+                    onDragStart={() => editor.setDraggedTableId(table.id)}
+                    onDrop={(event) => editor.handleTableDrop(event, table.id)}
                     onDuplicate={() => editor.duplicateTable(table.id)}
+                    onKeyboardMove={(direction) => editor.moveTable(table.id, direction)}
                     onRemove={() => editor.removeTable(table.id)}
                     onToggle={(isOpen) =>
                       editor.setOpenTableEditorIds((current) => {
@@ -128,15 +134,45 @@ export function PlanEditorPage() {
                   {t.actions.addTable}
                 </Button>
               </div>
-            </SidebarGroup>
+            </SidebarSection>
 
-            <SidebarGroup className="border-b border-border p-4 sm:p-5">
-              <div className="mb-3.5 flex items-baseline justify-between">
-                <h2 className="m-0 text-sm leading-tight font-semibold">{t.sections.guests}</h2>
-                <span className="text-xs font-semibold text-muted-foreground">
-                  {t.counts.seatedGuests(editor.guests.length - editor.unseatedGuests.length, editor.guests.length)}
-                </span>
+            <SidebarSection
+              contentClassName="min-h-44"
+              isOpen={editor.openSidebarSectionIds.has("unseated")}
+              meta={String(editor.unseatedGuests.length)}
+              onToggle={() => editor.toggleSidebarSection("unseated")}
+              title={t.sections.unseated}
+            >
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="mb-3 w-full"
+                    type="button"
+                    onClick={editor.autoSeatByGroup}
+                    disabled={editor.unseatedGuests.length === 0}
+                  >
+                    {t.actions.seatByGroup}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{t.actions.seatByGroupHint}</TooltipContent>
+              </Tooltip>
+              <div className="grid max-h-96 flex-auto gap-2.5 overflow-auto pr-1">
+                {editor.unseatedGuests.length === 0 ? (
+                  <p className="m-0 text-sm text-muted-foreground">{t.empty.allGuestsSeated}</p>
+                ) : (
+                  editor.unseatedGuests.map((guest) => (
+                    <GuestChip key={guest.id} guest={guest} onEdit={editor.openGuestEditor} onRemove={editor.removeGuest} />
+                  ))
+                )}
               </div>
+            </SidebarSection>
+
+            <SidebarSection
+              isOpen={editor.openSidebarSectionIds.has("guests")}
+              meta={t.counts.seatedGuests(editor.guests.length - editor.unseatedGuests.length, editor.guests.length)}
+              onToggle={() => editor.toggleSidebarSection("guests")}
+              title={t.actions.addGuest}
+            >
               <form className="grid gap-2.5" onSubmit={editor.addGuest}>
                 <Input
                   placeholder={t.fields.name}
@@ -161,12 +197,15 @@ export function PlanEditorPage() {
                   <option key={group} value={group} />
                 ))}
               </datalist>
-              <details className="group mt-3 grid gap-2.5 border-t border-border pt-3">
-                <summary className="flex cursor-pointer list-none items-center gap-1 text-sm font-bold text-muted-foreground transition-colors hover:text-foreground marker:hidden">
-                  <ChevronDown className="size-4 shrink-0 transition-transform group-open:rotate-180" aria-hidden="true" />
-                  {t.actions.chooseCsv}
-                </summary>
-                <div className="mt-3 grid gap-2.5">
+            </SidebarSection>
+
+            <SidebarSection
+              isOpen={editor.openSidebarSectionIds.has("import")}
+              meta="CSV"
+              onToggle={() => editor.toggleSidebarSection("import")}
+              title={t.actions.importGuests}
+            >
+              <div className="grid gap-2.5">
                 <Label className="relative inline-flex min-h-9 cursor-pointer items-center justify-center overflow-hidden rounded-md border border-border bg-background text-sm font-bold transition-colors hover:border-primary hover:text-primary">
                   <Input
                     className="absolute inset-0 h-full opacity-0"
@@ -186,49 +225,19 @@ export function PlanEditorPage() {
                 <Button className="w-full" type="button" onClick={editor.importGuestsFromCsv}>
                   {t.actions.importGuests}
                 </Button>
-                </div>
-              </details>
-            </SidebarGroup>
-
-            <SidebarGroup className="min-h-56 p-4 sm:p-5">
-              <div className="mb-3.5 flex items-baseline justify-between">
-                <h2 className="m-0 text-sm leading-tight font-semibold">{t.sections.unseated}</h2>
-                <span className="text-xs font-semibold text-muted-foreground">{editor.unseatedGuests.length}</span>
               </div>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    className="mb-3 w-full"
-                    type="button"
-                    onClick={editor.autoSeatByGroup}
-                    disabled={editor.unseatedGuests.length === 0}
-                  >
-                    {t.actions.seatByGroup}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>{t.actions.seatByGroupHint}</TooltipContent>
-              </Tooltip>
-              <div className="grid max-h-96 flex-auto gap-2.5 overflow-auto pr-1">
-                {editor.unseatedGuests.length === 0 ? (
-                  <p className="m-0 text-sm text-muted-foreground">{t.empty.allGuestsSeated}</p>
-                ) : (
-                  editor.unseatedGuests.map((guest) => (
-                    <GuestChip key={guest.id} guest={guest} onEdit={editor.openGuestEditor} onRemove={editor.removeGuest} />
-                  ))
-                )}
-              </div>
-            </SidebarGroup>
+            </SidebarSection>
           </SidebarContent>
           <SidebarRail />
         </Sidebar>
 
         <SidebarInset className="max-h-screen overflow-auto bg-canvas p-4 lg:p-5 max-lg:max-h-none md:peer-data-[collapsible=offcanvas]:ml-0">
-          <div className="mb-5 grid items-start gap-3 md:grid-cols-[1fr_minmax(0,48rem)_1fr]">
+          <div className="mb-5 grid items-start gap-3 md:grid-cols-[auto_minmax(0,1fr)_auto]">
             <div className="flex min-w-0 justify-start">
               <FloatingSidebarTrigger label={t.aria.toggleSidebar} />
             </div>
             <div
-              className="grid w-full max-w-3xl grid-cols-4 items-stretch overflow-hidden rounded-lg border border-border bg-background/80 max-md:max-w-none max-sm:grid-cols-2"
+              className="grid w-full max-w-3xl justify-self-center grid-cols-4 items-stretch overflow-hidden rounded-lg border border-border bg-background/80 max-md:max-w-none max-sm:grid-cols-2"
               aria-label={t.aria.planStatus}
             >
               <Stat label={t.stats.tables} value={editor.tables.length} />
@@ -238,6 +247,12 @@ export function PlanEditorPage() {
             </div>
             <div className="flex min-w-0 justify-end gap-2">
               <LanguageSwitcher />
+              <ExportMenu
+                isExportingXlsx={editor.isExporting}
+                labels={{ csv: t.actions.exportCsv, export: t.actions.exportSeats, xlsx: t.actions.exportXlsx }}
+                onExportCsv={editor.exportSeatConfigurationCsv}
+                onExportXlsx={() => void editor.exportToXlsx()}
+              />
               <ShareControl
                 copied={shareCopied}
                 isOpen={shareOpen}
@@ -362,4 +377,3 @@ function ShareControl({
     </div>
   );
 }
-
