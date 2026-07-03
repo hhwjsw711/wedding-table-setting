@@ -131,6 +131,38 @@ export const zhTW: Messages = {
     seatAssignmentDescription:
       "選擇一位賓客分配到此座位，編輯已分配的賓客，或清空座位。",
   },
+  partners: {
+    advertiseContact: "hhwjsw711@gmail.com",
+    advertiseDescription:
+      "觸達正在規劃婚宴座位的準新人——這是整場婚禮籌備中決策意圖最強的環節之一。首頁橫幅、精選合作卡片、賓客端分享頁等多種展示形式開放合作。",
+    advertisePricing:
+      "價格面議，聯繫我們獲取完整刊例與排期資訊。",
+    advertiseStats: [
+      { label: "月度受眾", value: "數千對準新人與策劃師" },
+      { label: "覆蓋語種", value: "中文 · 英文 · 義大利語" },
+      { label: "單場觸達", value: "每份分享連結 100+ 賓客" },
+    ],
+    advertiseTitle: "廣告合作",
+    bannerTitle: "婚禮聯名推薦",
+    bottomCta: "正在籌備婚禮？找專業策劃師幫忙",
+    bottomCtaLink: "瀏覽合作夥伴",
+    descriptions: {
+      "villa-deste": {
+        name: "Villa d'Este",
+        desc: "坐落於科莫湖畔的文藝復興貴族府邸，坐擁 10 公頃私家園林。自 1873 年以來一直是義大利最富盛名的婚禮目的地之一。",
+      },
+      "bella-sposa": {
+        name: "Bella Sposa Events",
+        desc: "一站式婚禮策劃與設計工作室。從私密儀式到盛大庆典，每一個細節都以義大利式的優雅與精準精心雕琢。",
+      },
+      "luce-photography": {
+        name: "Luce Photography",
+        desc: "電影敘事風格的婚禮攝影。專注歐洲與亞洲目的地婚禮，捕捉屬於你的故事瞬間。",
+      },
+    },
+    sectionTitle: "為您的大日子精選合作夥伴",
+    visitWebsite: "訪問官網",
+  },
   seats: {
     bottom: "下",
     left: "左",
@@ -166,14 +198,16 @@ export const zhTW: Messages = {
     toggleSidebar: "切換側邊欄",
   },
   viewer: {
+    brandFooter: "由婚禮排座提供 — weddingtable.cn",
     createYourOwn: "建立你自己的宴席",
-    seatingChart: "座次表",
-    searchPlaceholder: "搜尋你的名字…",
+    invalidLink: "無效連結",
+    loading: "正在載入…",
     notFound: "未找到宴席",
     notFoundDescription:
       "分享連結可能已逾期，請聯絡宴席主人取得新連結。",
-    invalidLink: "無效連結",
-    loading: "正在載入…",
+    printFooter: "婚禮排座 — weddingtable.cn",
+    searchPlaceholder: "搜尋你的名字…",
+    seatingChart: "座次表",
   },
   landing: {
     heroEyebrow: "免費 \u00b7 無需註冊 \u00b7 多語言",

@@ -135,6 +135,38 @@ export const it: Messages = {
     seatAssignmentDescription:
       "Scegli un ospite da assegnare a questo posto, modifica l'ospite assegnato o libera il posto.",
   },
+  partners: {
+    advertiseContact: "hhwjsw711@gmail.com",
+    advertiseDescription:
+      "Raggiungi migliaia di coppie nel momento in cui stanno pianificando la disposizione dei tavoli — una delle decisioni a più alta intenzione d'acquisto nel percorso del matrimonio. Banner in homepage, card partner in evidenza ed esposizione nella pagina di condivisione sono disponibili.",
+    advertisePricing:
+      "Contattaci per prezzi e disponibilità dei pacchetti.",
+    advertiseStats: [
+      { label: "Pubblico mensile", value: "Migliaia di coppie e planner" },
+      { label: "Lingue", value: "Cinese · Inglese · Italiano" },
+      { label: "Persone raggiunte", value: "100+ per piano condiviso" },
+    ],
+    advertiseTitle: "Pubblicità con noi",
+    bannerTitle: "Consigliato per il tuo matrimonio",
+    bottomCta: "Stai organizzando un matrimonio? Trova un wedding planner professionista",
+    bottomCtaLink: "Esplora i partner",
+    descriptions: {
+      "villa-deste": {
+        name: "Villa d'Este",
+        desc: "Una residenza patrizia rinascimentale sulle rive del Lago di Como, circondata da un parco di 10 ettari. Una delle destinazioni per matrimoni più celebrate d'Italia dal 1873.",
+      },
+      "bella-sposa": {
+        name: "Bella Sposa Events",
+        desc: "Studio completo di wedding planning e design. Dalle cerimonie intime alle grandi celebrazioni, ogni dettaglio realizzato con eleganza e precisione italiana.",
+      },
+      "luce-photography": {
+        name: "Luce Photography",
+        desc: "Fotografia di matrimonio editoriale con un tocco cinematografico. Specializzati in matrimoni di destinazione in Europa e Asia, catturando momenti che raccontano la tua storia.",
+      },
+    },
+    sectionTitle: "Partner di fiducia per il tuo grande giorno",
+    visitWebsite: "Visita il sito",
+  },
   seats: {
     bottom: "Sotto",
     left: "Sinistra",
@@ -170,14 +202,16 @@ export const it: Messages = {
     toggleSidebar: "Attiva/disattiva barra laterale",
   },
   viewer: {
+    brandFooter: "Realizzato con Wedding Table \u2014 weddingtable.cn",
     createYourOwn: "Crea il tuo banchetto",
-    seatingChart: "Disposizione Tavoli",
-    searchPlaceholder: "Cerca il tuo nome\u2026",
+    invalidLink: "Link non valido",
+    loading: "Caricamento\u2026",
     notFound: "Banchetto non trovato",
     notFoundDescription:
       "Questo link potrebbe essere scaduto. Chiedi un nuovo link all'organizzatore.",
-    invalidLink: "Link non valido",
-    loading: "Caricamento\u2026",
+    printFooter: "Wedding Table \u2014 weddingtable.cn",
+    searchPlaceholder: "Cerca il tuo nome\u2026",
+    seatingChart: "Disposizione Tavoli",
   },
   landing: {
     heroEyebrow: "Gratuito \u00b7 Nessuna registrazione \u00b7 Multilingue",

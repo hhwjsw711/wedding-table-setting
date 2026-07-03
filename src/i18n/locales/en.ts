@@ -134,6 +134,38 @@ export const en: Messages = {
     seatAssignmentDescription:
       "Choose a guest to assign to this seat, edit the assigned guest, or clear the seat.",
   },
+  partners: {
+    advertiseContact: "hhwjsw711@gmail.com",
+    advertiseDescription:
+      "Reach thousands of engaged couples at the moment they're planning their wedding seating — one of the highest-intent decisions in the wedding journey. Banner placements, featured partner cards, and shared plan page exposure are available.",
+    advertisePricing:
+      "Contact us for package pricing and placement availability.",
+    advertiseStats: [
+      { label: "Monthly audience", value: "Thousands of couples & planners" },
+      { label: "Languages", value: "Chinese · English · Italian" },
+      { label: "Guest reach", value: "100+ per shared plan link" },
+    ],
+    advertiseTitle: "Advertise with us",
+    bannerTitle: "Recommended for your wedding",
+    bottomCta: "Planning a wedding? Find a professional planner",
+    bottomCtaLink: "Explore partners",
+    descriptions: {
+      "villa-deste": {
+        name: "Villa d'Este",
+        desc: "A Renaissance patrician residence on the shores of Lake Como, surrounded by a 25-acre park. One of Italy's most celebrated wedding destinations since 1873.",
+      },
+      "bella-sposa": {
+        name: "Bella Sposa Events",
+        desc: "Full-service wedding planning and design studio. From intimate ceremonies to grand celebrations, every detail crafted with Italian elegance and precision.",
+      },
+      "luce-photography": {
+        name: "Luce Photography",
+        desc: "Editorial wedding photography with a cinematic touch. Specializing in destination weddings across Europe and Asia, capturing moments that tell your story.",
+      },
+    },
+    sectionTitle: "Trusted partners for your big day",
+    visitWebsite: "Visit website",
+  },
   seats: {
     bottom: "Bottom",
     left: "Left",
@@ -169,14 +201,16 @@ export const en: Messages = {
     toggleSidebar: "Toggle Sidebar",
   },
   viewer: {
+    brandFooter: "Created with Wedding Table \u2014 weddingtable.cn",
     createYourOwn: "Create your own banquet",
-    seatingChart: "Seating Chart",
-    searchPlaceholder: "Search your name\u2026",
+    invalidLink: "Invalid link",
+    loading: "Loading\u2026",
     notFound: "Banquet not found",
     notFoundDescription:
       "This link may have expired. Ask the host for a new one.",
-    invalidLink: "Invalid link",
-    loading: "Loading\u2026",
+    printFooter: "Wedding Table \u2014 weddingtable.cn",
+    searchPlaceholder: "Search your name\u2026",
+    seatingChart: "Seating Chart",
   },
   landing: {
     heroEyebrow: "Free \u00b7 No Registration \u00b7 Multi-language",
@@ -242,7 +276,7 @@ export const en: Messages = {
     pricingTitle: "Pricing",
     pricingFree: "Free",
     pricingVs:
-      "Professional wedding planners charge <s>$500-2,000</s> just for the seating chart. This tool does it in minutes, <span class=\"hl\">at zero cost</span>.",
+      "Professional wedding planners charge <s>$500-2,000</s> just for the seating chart. This tool does it in minutes, <span class=\"hl\">completely free</span>.",
     pricingTerms:
       "Completely free. No registration required to receive a shared link. No hidden fees. No limits on guests, tables, or plans.",
     faqLabel: "FAQ",

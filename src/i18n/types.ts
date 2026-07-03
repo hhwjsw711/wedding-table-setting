@@ -129,6 +129,19 @@ export type Messages = {
     editGuestDescription: string;
     seatAssignmentDescription: string;
   };
+  partners: {
+    advertiseContact: string;
+    advertiseDescription: string;
+    advertisePricing: string;
+    advertiseStats: { label: string; value: string }[];
+    advertiseTitle: string;
+    bannerTitle: string;
+    bottomCta: string;
+    bottomCtaLink: string;
+    descriptions: Record<string, { name: string; desc: string }>;
+    sectionTitle: string;
+    visitWebsite: string;
+  };
   seats: {
     bottom: string;
     left: string;
@@ -164,13 +177,15 @@ export type Messages = {
     toggleSidebar: string;
   };
   viewer: {
+    brandFooter: string;
     createYourOwn: string;
-    searchPlaceholder: string;
-    seatingChart: string;
-    notFound: string;
-    notFoundDescription: string;
     invalidLink: string;
     loading: string;
+    notFound: string;
+    notFoundDescription: string;
+    printFooter: string;
+    searchPlaceholder: string;
+    seatingChart: string;
   };
   landing: {
     heroEyebrow: string;
