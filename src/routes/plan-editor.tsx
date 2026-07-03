@@ -80,7 +80,7 @@ export function PlanEditorPage() {
   return (
     <div className="min-h-dvh min-w-80 bg-canvas font-sans text-foreground antialiased">
       <SidebarProvider className="bg-canvas" style={{ "--sidebar-width": "24rem" } as CSSProperties}>
-        <Sidebar className="border-border" collapsible="offcanvas">
+        <Sidebar className="border-border print:hidden" collapsible="offcanvas">
           <SidebarHeader className="border-b border-border bg-background p-2">
             <div className="flex min-h-10 items-center justify-between gap-2 px-2">
               <div className="min-w-0">
@@ -232,7 +232,10 @@ export function PlanEditorPage() {
         </Sidebar>
 
         <SidebarInset className="max-h-screen overflow-auto bg-canvas p-4 lg:p-5 max-lg:max-h-none md:peer-data-[collapsible=offcanvas]:ml-0">
-          <div className="mb-5 grid items-start gap-3 md:grid-cols-[auto_minmax(0,1fr)_auto]">
+          <div className="mb-4 hidden text-center print:block">
+            <h1 className="text-xl font-bold tracking-tight">{plan.name}</h1>
+          </div>
+          <div className="mb-5 grid items-start gap-3 md:grid-cols-[auto_minmax(0,1fr)_auto] print:hidden">
             <div className="flex min-w-0 justify-start">
               <FloatingSidebarTrigger label={t.aria.toggleSidebar} />
             </div>

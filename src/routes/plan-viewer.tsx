@@ -93,13 +93,20 @@ export function PlanViewerPage() {
   }
 
   return (
-    <div className="min-h-dvh min-w-80 bg-canvas font-sans text-foreground antialiased">
-      <div className="mx-auto max-w-6xl px-4 py-6">
+    <div className="min-h-dvh min-w-80 bg-canvas font-sans text-foreground antialiased print:bg-white">
+      <div className="mx-auto max-w-6xl px-4 py-6 print:pt-2">
+
+        {/* Print-only header — plan name + timestamp */}
+        <div className="mb-4 hidden text-center print:block">
+          <h1 className="text-xl font-bold tracking-tight">{plan.name}</h1>
+        </div>
+
+        {/* Screen-only header */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3 print:hidden">
           <div className="flex items-center gap-3">
             <WeddingLogo className="size-7" />
             <div>
-              <h1 className="text-xl font-bold">{plan.name}</h1>
+              <h1 className="text-xl font-bold leading-tight">{plan.name}</h1>
               <p className="text-xs text-muted-foreground">{t.viewer.seatingChart}</p>
             </div>
           </div>
@@ -132,10 +139,9 @@ export function PlanViewerPage() {
           </div>
         </div>
 
+        {/* Stats bar — screen only */}
         <div className="mb-6 print:hidden">
-          <div
-            className="grid w-full max-w-3xl grid-cols-4 items-stretch overflow-hidden rounded-lg border border-border bg-background/80 max-sm:grid-cols-2"
-          >
+          <div className="grid w-full max-w-3xl grid-cols-4 items-stretch overflow-hidden rounded-lg border border-border bg-background/80 max-sm:grid-cols-2">
             <Stat label={t.stats.tables} value={safeTables.length} />
             <Stat label={t.stats.seats} value={seats.length} />
             <Stat label={t.stats.guests} value={safeGuests.length} />
@@ -143,7 +149,8 @@ export function PlanViewerPage() {
           </div>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-[1fr_20rem]">
+        {/* Seating chart + guest list */}
+        <div className="grid gap-8 lg:grid-cols-[1fr_20rem] print:block">
           <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-2 2xl:grid-cols-3">
             {safeTables.map((table) => (
               <div key={table.id} className="grid gap-1.5">
@@ -279,6 +286,7 @@ export function PlanViewerPage() {
             ))}
           </div>
 
+          {/* Guest list sidebar — screen only */}
           <div className="max-h-[calc(100vh-12rem)] overflow-auto rounded-lg border border-border bg-background p-4 print:hidden">
             <h2 className="mb-3 text-sm font-semibold">{t.sections.guests}</h2>
             <div className="grid gap-1.5">
@@ -300,6 +308,21 @@ export function PlanViewerPage() {
             </div>
           </div>
         </div>
+
+        {/* Screen footer — clickable brand + URL */}
+        <div className="mt-10 border-t border-border pt-4 text-center print:hidden">
+          <Link
+            to="/"
+            className="text-xs text-muted-foreground transition-colors hover:text-primary"
+          >
+            {t.viewer.brandFooter}
+          </Link>
+        </div>
+
+        {/* Print footer — brand + URL as plain text */}
+        <p className="mt-8 hidden text-center text-[10px] text-muted-foreground print:block">
+          {t.viewer.printFooter}
+        </p>
       </div>
     </div>
   );
