@@ -17,7 +17,7 @@ const badgeClassNames: Record<string, string> = {
 
 export function DietaryBadges({ className, compact = false, dietary }: { className?: string; compact?: boolean; dietary: string }) {
   const { t } = useI18n();
-  const badges = getDietaryBadges(dietary);
+  const badges = getDietaryBadges(dietary, t.fields.dietaryNote);
   if (badges.length === 0) return null;
 
   return (

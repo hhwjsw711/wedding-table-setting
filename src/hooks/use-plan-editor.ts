@@ -300,7 +300,7 @@ export function usePlanEditor(planId: string, t: Messages) {
     const occupied = new Set(Object.keys(assignmentMap));
     const assignedGuests = new Set(Object.values(assignmentMap));
     const unseated = safeGuests.filter((guest) => !assignedGuests.has(guest.id));
-    const grouped = groupGuests(unseated);
+    const grouped = groupGuests(unseated, t.fields.ungrouped);
     const emptySeatsByTable = safeTables.map((table) => ({
       tableId: table.id,
       seats: seats.filter((seat) => seat.tableId === table.id && !occupied.has(seat.id)),
@@ -332,8 +332,16 @@ export function usePlanEditor(planId: string, t: Messages) {
 
   function exportSeatConfigurationCsv() {
     const state = { tables: safeTables, guests: safeGuests, assignments: assignmentMap };
-    const csv = createSeatConfigurationCsv(state, t.seats, t.defaults.table);
-    downloadBlob(new Blob([`\ufeff${csv}`], { type: "text/csv;charset=utf-8" }), `${exportFilename(safeTables, t.defaults.table)}.csv`);
+    const csv = createSeatConfigurationCsv(
+      state,
+      t.seats,
+      t.defaults.table,
+      [t.export.guestHeader, t.export.tableHeader, t.export.seatHeader, t.export.dietaryHeader],
+    );
+    downloadBlob(
+      new Blob([`\ufeff${csv}`], { type: "text/csv;charset=utf-8" }),
+      `${exportFilename(safeTables, t.defaults.table, t.export.weddingSeatingPlan)}.csv`,
+    );
   }
 
   async function exportToXlsx() {
@@ -341,14 +349,19 @@ export function usePlanEditor(planId: string, t: Messages) {
     try {
       const { createSeatingPlanWorkbook } = await import("@/planner/export-workbook");
       const state = { tables: safeTables, guests: safeGuests, assignments: assignmentMap };
-      const workbook = await createSeatingPlanWorkbook({ planName: exportFilename(safeTables, t.defaults.table), state });
+      const workbook = await createSeatingPlanWorkbook({
+        planName: exportFilename(safeTables, t.defaults.table, t.export.weddingSeatingPlan),
+        state,
+        exportT: t.export,
+        tableFallback: t.defaults.table,
+      });
       const buffer = await workbook.xlsx.writeBuffer();
       downloadBlob(
         new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }),
-        `${exportFilename(safeTables, t.defaults.table)}.xlsx`,
+        `${exportFilename(safeTables, t.defaults.table, t.export.weddingSeatingPlan)}.xlsx`,
       );
-    } catch {
-      console.error("Failed to export XLSX seating plan");
+    } catch (err) {
+      console.error(err);
     } finally {
       setIsExporting(false);
     }
@@ -426,9 +439,9 @@ function downloadBlob(blob: Blob, filename: string) {
   window.setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
-function exportFilename(tables: WeddingTable[], tableFallback: string) {
-  const name = tables[0]?.name?.trim() || tableFallback || "wedding-seating-plan";
-  return name.slice(0, 48).replace(/[<>:"/\\|?*\x00-\x1f]/g, "-") || "wedding-seating-plan";
+function exportFilename(tables: WeddingTable[], tableFallback: string, absoluteFallback: string) {
+  const name = tables[0]?.name?.trim() || tableFallback || absoluteFallback;
+  return name.slice(0, 48).replace(/[<>:"/\\|?*\x00-\x1f]/g, "-") || absoluteFallback;
 }
 
 function createDuplicateTableName(name: string, tables: WeddingTable[], copySuffix: string) {

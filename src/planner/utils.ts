@@ -133,10 +133,10 @@ export function sanitizeAssignments(state: PlannerState): PlannerState {
   return { ...state, assignments };
 }
 
-export function groupGuests(guests: Guest[]) {
+export function groupGuests(guests: Guest[], ungroupedLabel = "") {
   const groups = new Map<string, Guest[]>();
   for (const guest of guests) {
-    const group = guest.group.trim() || "Ungrouped";
+    const group = guest.group.trim() || ungroupedLabel;
     groups.set(group, [...(groups.get(group) ?? []), guest]);
   }
   return [...groups.entries()]
@@ -144,7 +144,7 @@ export function groupGuests(guests: Guest[]) {
     .map(([, groupGuests]) => orderGuestsForAlternatingSeating(groupGuests));
 }
 
-export function getDietaryBadges(dietary: string) {
+export function getDietaryBadges(dietary: string, dietaryNoteLabel = "") {
   const value = dietary.trim();
   if (!value) return [];
 
@@ -172,7 +172,7 @@ export function getDietaryBadges(dietary: string) {
       ...matches,
       {
         code: "Di",
-        label: "Dietary note",
+        label: dietaryNoteLabel,
         className: "other",
       },
     ];
@@ -181,7 +181,7 @@ export function getDietaryBadges(dietary: string) {
   return [
     {
       code: "Di",
-      label: "Dietary note",
+      label: dietaryNoteLabel,
       className: "other",
     },
   ];
@@ -209,9 +209,14 @@ export function parseGuestsCsv(text: string): Omit<Guest, "id">[] {
     .filter((guest) => guest.name);
 }
 
-export function createSeatConfigurationCsv(state: PlannerState, labels: SeatLabels = defaultSeatLabels, tableFallback = "Table") {
+export function createSeatConfigurationCsv(
+  state: PlannerState,
+  labels: SeatLabels = defaultSeatLabels,
+  tableFallback = "",
+  headers: readonly string[] = ["Guest name", "Table name", "Seat position", "Dietary restrictions"],
+) {
   const guestById = new Map(state.guests.map((guest) => [guest.id, guest]));
-  const rows = [["Guest name", "Table name", "Seat position", "Dietary restrictions"]];
+  const rows = [[...headers]];
 
   for (const table of state.tables) {
     const tableName = table.name.trim() || tableFallback;

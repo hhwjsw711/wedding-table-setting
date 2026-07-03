@@ -52,7 +52,7 @@ export function LoginPage() {
         <LanguageSwitcher />
       </div>
 
-      <Link to="/" className="mb-2" aria-label="Wedding Table">
+      <Link to="/" className="mb-2" aria-label={t.landing.heroTitle}>
         <WeddingLogo className="size-10" />
       </Link>
 

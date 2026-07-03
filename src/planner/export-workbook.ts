@@ -1,11 +1,16 @@
 import ExcelJS from "exceljs";
 
+import type { Messages } from "@/i18n";
 import type { Guest, PlannerState, Seat, WeddingTable } from "@/planner/types";
 import { createSeatsForTable, findSeatForGuest } from "@/planner/utils";
 
+type ExportT = Messages["export"];
+
 type ExportWorkbookInput = {
+  exportT: ExportT;
   planName: string;
   state: PlannerState;
+  tableFallback: string;
 };
 
 type SeatingGuestCell = {
@@ -51,21 +56,27 @@ const tableOutlineBorder: Partial<ExcelJS.Borders> = {
   top: { style: "thin", color: { argb: "FF000000" } },
 };
 
-export async function createSeatingPlanWorkbook({ planName, state }: ExportWorkbookInput) {
+export async function createSeatingPlanWorkbook(input: ExportWorkbookInput) {
+  const { exportT: t, planName, state, tableFallback } = input;
   const workbook = new ExcelJS.Workbook();
   workbook.creator = "Wedding Table Setting";
   workbook.created = new Date();
   workbook.modified = new Date();
   workbook.properties.date1904 = false;
 
-  addSeatingPlanSheet(workbook, state);
-  addGuestListSheet(workbook, state, planName);
+  addSeatingPlanSheet(workbook, state, t, tableFallback);
+  addGuestListSheet(workbook, state, planName, t);
 
   return workbook;
 }
 
-function addSeatingPlanSheet(workbook: ExcelJS.Workbook, state: PlannerState) {
-  const worksheet = workbook.addWorksheet("Seating Plan", {
+function addSeatingPlanSheet(
+  workbook: ExcelJS.Workbook,
+  state: PlannerState,
+  t: ExportT,
+  tableFallback: string,
+) {
+  const worksheet = workbook.addWorksheet(t.seatingPlan, {
     pageSetup: {
       fitToPage: true,
       fitToWidth: 1,
@@ -84,11 +95,11 @@ function addSeatingPlanSheet(workbook: ExcelJS.Workbook, state: PlannerState) {
     width: index % TABLE_BLOCK_WIDTH === 2 ? 4.8 : 11,
   }));
 
-  const guestRowsByTable = state.tables.map((table) => createTableGuestCells(table, state));
+  const guestRowsByTable = state.tables.map((table) => createTableGuestCells(table, state, t));
   const sectionCount = Math.max(1, Math.ceil(state.tables.length / TABLES_PER_ROW));
   let sectionTop = TOP_MARGIN_ROWS + 1;
 
-  addTopBanner(worksheet, sectionTop);
+  addTopBanner(worksheet, sectionTop, t);
 
   for (let sectionIndex = 0; sectionIndex < sectionCount; sectionIndex += 1) {
     const tables = state.tables.slice(sectionIndex * TABLES_PER_ROW, (sectionIndex + 1) * TABLES_PER_ROW);
@@ -111,7 +122,8 @@ function addSeatingPlanSheet(workbook: ExcelJS.Workbook, state: PlannerState) {
       });
       const tableNameCell = worksheet.getCell(tableNameRow, startColumn);
       worksheet.mergeCells(tableNameRow, startColumn, tableNameRow, Math.min(PAGE_COLUMNS, startColumn + 2));
-      tableNameCell.value = table.name.trim() || `Table ${sectionIndex * TABLES_PER_ROW + tableIndex + 1}`;
+      tableNameCell.value =
+        table.name.trim() || `${tableFallback} ${sectionIndex * TABLES_PER_ROW + tableIndex + 1}`;
       tableNameCell.alignment = { horizontal: "center", vertical: "middle" };
       tableNameCell.font = { name: "Arial", size: 10, color: { argb: "FF1D2A36" } };
     }
@@ -120,20 +132,20 @@ function addSeatingPlanSheet(workbook: ExcelJS.Workbook, state: PlannerState) {
     sectionTop = mareRow + SECTION_FOOTER_ROWS;
   }
 
-  addNotes(worksheet, sectionTop - 2);
+  addNotes(worksheet, sectionTop - 2, t);
 }
 
-function addTopBanner(worksheet: ExcelJS.Worksheet, topRow: number) {
+function addTopBanner(worksheet: ExcelJS.Worksheet, topRow: number, t: ExportT) {
   worksheet.mergeCells(topRow, 4, topRow + 1, 22);
   const title = worksheet.getCell(topRow, 4);
-  title.value = "Seating Plan";
+  title.value = t.seatingPlan;
   title.fill = solidFill(colors.banner);
   title.font = { name: "Arial", size: 10, color: { argb: "FF1D2A36" } };
   title.alignment = { horizontal: "center", vertical: "middle", wrapText: true };
 
   worksheet.mergeCells(topRow + 2, 4, topRow + 2, 22);
   const subtitle = worksheet.getCell(topRow + 2, 4);
-  subtitle.value = "Please fill the scheme with the names of the Guests";
+  subtitle.value = t.fillGuestNames;
   subtitle.fill = solidFill(colors.divider);
   subtitle.font = { name: "Arial", size: 10, color: { argb: "FF1D2A36" } };
   subtitle.alignment = { horizontal: "center", vertical: "middle", wrapText: true };
@@ -191,22 +203,23 @@ function writeGuestCell(cell: ExcelJS.Cell, guestCell: SeatingGuestCell | undefi
   cell.alignment = { horizontal: "right", vertical: "middle", shrinkToFit: true };
 }
 
-function addNotes(worksheet: ExcelJS.Worksheet, rowNumber: number) {
+function addNotes(worksheet: ExcelJS.Worksheet, rowNumber: number, t: ExportT) {
   worksheet.mergeCells(rowNumber, 1, rowNumber, 10);
   const cell = worksheet.getCell(rowNumber, 1);
-  cell.value = [
-    "* consider 20/22 guests per table",
-    "* decide where the newlyweds will sit",
-    "* fill in all guest names in place of guest n.x",
-  ].join("\n");
+  cell.value = [t.note1, t.note2, t.note3].join("\n");
   cell.fill = solidFill(colors.note);
   cell.font = { name: "Arial", size: 10, color: { argb: "FF1D2A36" } };
   cell.alignment = { horizontal: "left", vertical: "middle", wrapText: true };
   worksheet.getRow(rowNumber).height = 57;
 }
 
-function addGuestListSheet(workbook: ExcelJS.Workbook, state: PlannerState, planName: string) {
-  const worksheet = workbook.addWorksheet("Guest List", {
+function addGuestListSheet(
+  workbook: ExcelJS.Workbook,
+  state: PlannerState,
+  planName: string,
+  t: ExportT,
+) {
+  const worksheet = workbook.addWorksheet(t.guestList, {
     pageSetup: {
       fitToPage: false,
       fitToWidth: 1,
@@ -217,13 +230,13 @@ function addGuestListSheet(workbook: ExcelJS.Workbook, state: PlannerState, plan
     views: [{ state: "frozen", ySplit: 1, showGridLines: true }],
   });
   worksheet.columns = [
-    { header: "Guest", key: "guest", width: 30 },
-    { header: "Table", key: "table", width: 24 },
-    { header: "Seat", key: "seat", width: 18 },
-    { header: "Dietary restrictions", key: "dietary", width: 34 },
+    { header: t.guestHeader, key: "guest", width: 30 },
+    { header: t.tableHeader, key: "table", width: 24 },
+    { header: t.seatHeader, key: "seat", width: 18 },
+    { header: t.dietaryHeader, key: "dietary", width: 34 },
   ];
 
-  worksheet.getRow(1).values = ["Guest", "Table", "Seat", "Dietary restrictions"];
+  worksheet.getRow(1).values = [t.guestHeader, t.tableHeader, t.seatHeader, t.dietaryHeader];
   worksheet.getRow(1).height = 22;
   worksheet.getRow(1).eachCell((cell) => {
     cell.fill = solidFill(colors.guestListHeader);
@@ -249,16 +262,16 @@ function addGuestListSheet(workbook: ExcelJS.Workbook, state: PlannerState, plan
     from: { column: 1, row: 1 },
     to: { column: 4, row: Math.max(1, state.guests.length + 1) },
   };
-  worksheet.headerFooter.oddHeader = `&C${planName || "Wedding seating plan"}`;
+  worksheet.headerFooter.oddHeader = `&C${planName || t.weddingSeatingPlan}`;
 }
 
-function createTableGuestCells(table: WeddingTable, state: PlannerState) {
+function createTableGuestCells(table: WeddingTable, state: PlannerState, t: ExportT) {
   const guestById = new Map(state.guests.map((guest) => [guest.id, guest]));
   return createSeatsForTable(table).map((seat, index) => {
     const guest = guestById.get(state.assignments[seat.id]);
     return {
       guestName: guest?.name ?? "",
-      placeholder: `guest n.${index + 1}`,
+      placeholder: t.guestPlaceholder(index + 1),
     };
   });
 }
