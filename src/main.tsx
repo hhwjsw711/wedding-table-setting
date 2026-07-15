@@ -9,6 +9,7 @@ import { LoginPage } from "@/routes/login";
 import { DashboardPage } from "@/routes/dashboard";
 import { PlanEditorPage } from "@/routes/plan-editor";
 import { PlanViewerPage } from "@/routes/plan-viewer";
+import { DemoEditorPage } from "@/routes/demo-editor";
 import { AuthenticatedRoute } from "@/routes/authenticated-route";
 import { ErrorBoundary } from "@/components/error-boundary";
 import "./styles.css";
@@ -25,6 +26,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="dashboard" element={<AuthenticatedRoute><DashboardPage /></AuthenticatedRoute>} />
             <Route path="plan/:planId" element={<AuthenticatedRoute><PlanEditorPage /></AuthenticatedRoute>} />
             <Route path="view/:shareToken" element={<PlanViewerPage />} />
+            <Route path="demo" element={<DemoEditorPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

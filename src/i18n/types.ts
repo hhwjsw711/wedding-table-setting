@@ -170,6 +170,15 @@ export type Messages = {
   templates: {
     createGuest: (name: string) => string;
   };
+  demo?: {
+    bannerTitle: string;
+    bannerDesc: string;
+    planName: string;
+    registerSave: string;
+    saveToCloud: string;
+    migrating: string;
+    migrated: string;
+  };
   ui: {
     close: string;
     sidebar: string;
@@ -192,25 +201,47 @@ export type Messages = {
     heroTitle: string;
     heroTagline: string;
     startFree: string;
+    tryNow: string;
     goToApp: string;
     galleryLabel: string;
     galleryTitle: string;
     galleryLede: string;
     galleryAlt: string;
+
+    advantagesLabel: string;
+    advantagesTitle: string;
+    advantages: { icon: string; title: string; desc: string }[];
+
     featuresLabel: string;
     featuresTitle: string;
+    featuresLede: string;
     features: { name: string; desc: string }[];
+
     stepsTitle: string;
     stepsLabel: string;
+    stepsLede: string;
     steps: { title: string; desc: string }[];
+
+    guideLabel: string;
+    guideTitle: string;
+    guideSections: { title: string; body: string }[];
+
+    testimonialsLabel: string;
+    testimonialsTitle: string;
+    testimonials: { quote: string; author: string; location: string }[];
+
     pricingLabel: string;
     pricingTitle: string;
     pricingFree: string;
     pricingVs: string;
     pricingTerms: string;
+
     faqLabel: string;
     faqTitle: string;
     faq: { q: string; a: string }[];
+
+    bottomCtaTitle: string;
+    bottomCtaDesc: string;
     footerTagline: string;
   };
 };
