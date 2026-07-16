@@ -521,6 +521,8 @@ export function LandingPage() {
           </Reveal>
         )}
 
+        <Ornament />
+
         {/* ====== Advertise ====== */}
         <Reveal>
           <section className="mb-20 overflow-hidden rounded-3xl bg-gradient-to-b from-primary-muted/40 via-background to-background px-6 py-12 shadow-soft sm:px-10 sm:py-16">
@@ -561,6 +563,8 @@ export function LandingPage() {
             </div>
           </section>
         </Reveal>
+
+        <Ornament />
 
         {/* ====== Bottom CTA ====== */}
         <Reveal>
