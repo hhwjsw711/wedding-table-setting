@@ -4,29 +4,34 @@ export function WeddingLogo({ className = "size-8" }: { className?: string }) {
       {/* Background circle */}
       <circle cx="32" cy="32" r="30" fill="#f8f4f1" />
 
-      {/* Left chair */}
-      <path d="M12 22 L12 38" stroke="#b8868e" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-      <path d="M12 38 L22 38" stroke="#b8868e" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-      <path d="M22 38 L22 44" stroke="#b8868e" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-      <path d="M12 38 L12 44" stroke="#b8868e" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-      <path d="M10 22 L14 22" stroke="#b8868e" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+      {/* Left chair back */}
+      <path d="M11 18 L11 36" stroke="#b8868e" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      <path d="M9 18 L15 18" stroke="#b8868e" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      {/* Left chair seat */}
+      <rect x="11" y="36" width="13" height="2.5" rx="1" fill="#b8868e" />
+      {/* Left chair legs */}
+      <path d="M23 38.5 L23 46" stroke="#b8868e" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      <path d="M13 38.5 L13 46" stroke="#b8868e" strokeWidth="2.5" strokeLinecap="round" fill="none" />
 
-      {/* Right chair */}
-      <path d="M52 22 L52 38" stroke="#b8868e" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-      <path d="M42 38 L52 38" stroke="#b8868e" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-      <path d="M42 38 L42 44" stroke="#b8868e" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-      <path d="M52 38 L52 44" stroke="#b8868e" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-      <path d="M50 22 L54 22" stroke="#b8868e" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+      {/* Right chair back */}
+      <path d="M53 18 L53 36" stroke="#b8868e" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      <path d="M49 18 L55 18" stroke="#b8868e" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      {/* Right chair seat */}
+      <rect x="40" y="36" width="13" height="2.5" rx="1" fill="#b8868e" />
+      {/* Right chair legs */}
+      <path d="M41 38.5 L41 46" stroke="#b8868e" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      <path d="M51 38.5 L51 46" stroke="#b8868e" strokeWidth="2.5" strokeLinecap="round" fill="none" />
 
       {/* Table */}
-      <ellipse cx="32" cy="36" rx="8" ry="3" fill="none" stroke="#b8868e" strokeWidth="2" />
-      <path d="M32 39 L32 46" stroke="#b8868e" strokeWidth="2" strokeLinecap="round" fill="none" />
-      <path d="M28 46 L36 46" stroke="#b8868e" strokeWidth="2" strokeLinecap="round" fill="none" />
+      <rect x="25" y="32" width="14" height="3" rx="1.5" fill="#c9a66b" opacity="0.35" />
+      <rect x="25" y="32" width="14" height="3" rx="1.5" fill="none" stroke="#b8868e" strokeWidth="2" />
+      <path d="M32 35 L32 44" stroke="#b8868e" strokeWidth="2" strokeLinecap="round" fill="none" />
+      <path d="M28 44 L36 44" stroke="#b8868e" strokeWidth="2" strokeLinecap="round" fill="none" />
 
-      {/* Small flower accent on table */}
-      <circle cx="32" cy="33.5" r="1.5" fill="#c9a66b" opacity="0.6" />
-      <circle cx="30" cy="33" r="0.8" fill="#b8868e" opacity="0.4" />
-      <circle cx="34" cy="33" r="0.8" fill="#b8868e" opacity="0.4" />
+      {/* Flower accent */}
+      <circle cx="32" cy="31" r="2" fill="#c9a66b" opacity="0.7" />
+      <circle cx="30" cy="30" r="1" fill="#b8868e" opacity="0.5" />
+      <circle cx="34" cy="30" r="1" fill="#b8868e" opacity="0.5" />
     </svg>
   );
 }
