@@ -100,13 +100,13 @@ body {
   justify-content: center;
   gap: 0.75rem;
   color: var(--color-primary);
-  opacity: 0.4;
+  opacity: 0.5;
 }
 .divider-ornament::before,
 .divider-ornament::after {
   content: "";
   height: 1px;
-  width: 3rem;
+  width: 4rem;
   background: currentColor;
 }
 
