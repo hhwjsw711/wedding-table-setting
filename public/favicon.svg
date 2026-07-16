@@ -2,38 +2,28 @@
   <!-- Background circle -->
   <circle cx="32" cy="32" r="30" fill="#f8f4f1"/>
 
-  <!-- Left chair back -->
-  <path d="M11 18 L11 36" stroke="#b8868e" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-  <!-- Left chair back top rail -->
-  <path d="M9 18 L15 18" stroke="#b8868e" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-  <!-- Left chair seat -->
-  <rect x="11" y="36" width="13" height="2.5" rx="1" fill="#b8868e"/>
-  <!-- Left chair front leg -->
-  <path d="M23 38.5 L23 46" stroke="#b8868e" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-  <!-- Left chair back leg -->
-  <path d="M13 38.5 L13 46" stroke="#b8868e" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <!-- Round table (top-down view) -->
+  <circle cx="32" cy="32" r="12" fill="#f8f0e8" stroke="#b8868e" stroke-width="2.5"/>
 
-  <!-- Right chair back -->
-  <path d="M53 18 L53 36" stroke="#b8868e" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-  <!-- Right chair back top rail -->
-  <path d="M49 18 L55 18" stroke="#b8868e" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-  <!-- Right chair seat -->
-  <rect x="40" y="36" width="13" height="2.5" rx="1" fill="#b8868e"/>
-  <!-- Right chair front leg -->
-  <path d="M41 38.5 L41 46" stroke="#b8868e" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-  <!-- Right chair back leg -->
-  <path d="M51 38.5 L51 46" stroke="#b8868e" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <!-- Table cloth inner ring -->
+  <circle cx="32" cy="32" r="7" fill="none" stroke="#c9a66b" stroke-width="1" opacity="0.5"/>
 
-  <!-- Table top (filled for emphasis) -->
-  <rect x="25" y="32" width="14" height="3" rx="1.5" fill="#c9a66b" opacity="0.35"/>
-  <rect x="25" y="32" width="14" height="3" rx="1.5" fill="none" stroke="#b8868e" stroke-width="2"/>
-  <!-- Table leg -->
-  <path d="M32 35 L32 44" stroke="#b8868e" stroke-width="2" stroke-linecap="round" fill="none"/>
-  <!-- Table base -->
-  <path d="M28 44 L36 44" stroke="#b8868e" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <!-- Center flower -->
+  <circle cx="32" cy="32" r="3" fill="#c9a66b" opacity="0.8"/>
+  <circle cx="32" cy="28.5" r="1.5" fill="#b8868e" opacity="0.6"/>
+  <circle cx="35" cy="30" r="1.5" fill="#b8868e" opacity="0.5"/>
+  <circle cx="35" cy="34" r="1.5" fill="#b8868e" opacity="0.5"/>
+  <circle cx="32" cy="35.5" r="1.5" fill="#b8868e" opacity="0.6"/>
+  <circle cx="29" cy="34" r="1.5" fill="#b8868e" opacity="0.5"/>
+  <circle cx="29" cy="30" r="1.5" fill="#b8868e" opacity="0.5"/>
 
-  <!-- Small gold flower accent -->
-  <circle cx="32" cy="31" r="2" fill="#c9a66b" opacity="0.7"/>
-  <circle cx="30" cy="30" r="1" fill="#b8868e" opacity="0.5"/>
-  <circle cx="34" cy="30" r="1" fill="#b8868e" opacity="0.5"/>
+  <!-- Seat dots around table (8 seats) -->
+  <circle cx="32" cy="16" r="2.5" fill="#b8868e" opacity="0.7"/>
+  <circle cx="43.3" cy="20.7" r="2.5" fill="#b8868e" opacity="0.6"/>
+  <circle cx="48" cy="32" r="2.5" fill="#b8868e" opacity="0.7"/>
+  <circle cx="43.3" cy="43.3" r="2.5" fill="#b8868e" opacity="0.6"/>
+  <circle cx="32" cy="48" r="2.5" fill="#b8868e" opacity="0.7"/>
+  <circle cx="20.7" cy="43.3" r="2.5" fill="#b8868e" opacity="0.6"/>
+  <circle cx="16" cy="32" r="2.5" fill="#b8868e" opacity="0.7"/>
+  <circle cx="20.7" cy="20.7" r="2.5" fill="#b8868e" opacity="0.6"/>
 </svg>
