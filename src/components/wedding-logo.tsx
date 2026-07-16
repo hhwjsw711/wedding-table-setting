@@ -1,30 +1,12 @@
 export function WeddingLogo({ className = "size-8" }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-      {/* Background circle */}
-      <circle cx="32" cy="32" r="30" fill="#b8868e" opacity="0.12" />
-
-      {/* Large round table */}
-      <circle cx="32" cy="30" r="14" fill="none" stroke="#b8868e" strokeWidth="3" />
-      {/* Tablecloth fill */}
-      <circle cx="32" cy="30" r="10" fill="#f8f0e8" />
-
-      {/* 5-petal flower in center */}
-      <circle cx="32" cy="30" r="3.5" fill="#c9a66b" />
-      <circle cx="32" cy="25.5" r="2.2" fill="#b8868e" opacity="0.65" />
-      <circle cx="36.1" cy="27.3" r="2.2" fill="#b8868e" opacity="0.55" />
-      <circle cx="36.1" cy="32.7" r="2.2" fill="#b8868e" opacity="0.55" />
-      <circle cx="32" cy="34.5" r="2.2" fill="#b8868e" opacity="0.65" />
-      <circle cx="27.9" cy="32.7" r="2.2" fill="#b8868e" opacity="0.55" />
-      <circle cx="27.9" cy="27.3" r="2.2" fill="#b8868e" opacity="0.55" />
-
-      {/* 6 seat indicators */}
-      <rect x="29.5" y="13" width="5" height="4" rx="2" fill="#b8868e" opacity="0.7" />
-      <rect x="29.5" y="43" width="5" height="4" rx="2" fill="#b8868e" opacity="0.7" />
-      <rect x="43" y="23.5" width="4" height="5" rx="2" fill="#b8868e" opacity="0.65" transform="rotate(30 45 26)" />
-      <rect x="43" y="37.5" width="4" height="5" rx="2" fill="#b8868e" opacity="0.65" transform="rotate(-30 45 40)" />
-      <rect x="17" y="37.5" width="4" height="5" rx="2" fill="#b8868e" opacity="0.65" transform="rotate(30 19 40)" />
-      <rect x="17" y="23.5" width="4" height="5" rx="2" fill="#b8868e" opacity="0.65" transform="rotate(-30 19 26)" />
-    </svg>
+    <img
+      className={className}
+      src="/logo-128.png"
+      alt="Wedding Table"
+      width={32}
+      height={32}
+      decoding="async"
+    />
   );
 }

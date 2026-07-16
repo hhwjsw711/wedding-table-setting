@@ -1,0 +1,13 @@
+{
+  "name": "婚礼排座 - Wedding Table",
+  "short_name": "婚礼排座",
+  "description": "免费在线婚宴座位安排工具",
+  "icons": [
+    { "src": "/pwa-icon-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/pwa-icon-512x512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "theme_color": "#b8868e",
+  "background_color": "#f8f4f1",
+  "display": "standalone",
+  "start_url": "/"
+}
