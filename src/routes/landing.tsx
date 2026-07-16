@@ -162,12 +162,12 @@ export function LandingPage() {
               width="1200"
             />
           </picture>
-          <div className="absolute inset-0 bg-gradient-to-b from-canvas/85 via-canvas/40 to-canvas/95" />
+          <div className="absolute inset-0 bg-gradient-to-b from-canvas/90 via-canvas/55 to-canvas/95" />
           <div className="relative px-6 pb-14 pt-16 sm:px-12 sm:pb-20 sm:pt-24 md:px-16 md:pt-28">
             <p className="mb-5 text-xs font-medium tracking-[0.22em] uppercase text-primary">
               {L.heroEyebrow}
             </p>
-            <h1 className="mb-6 max-w-3xl font-serif text-4xl font-light leading-[1.15] tracking-tight sm:text-6xl lg:text-7xl">
+            <h1 className="mb-6 max-w-3xl font-serif text-4xl font-light leading-[1.15] tracking-tight sm:text-5xl lg:text-6xl">
               {L.heroTitle}
             </h1>
             <p className="mb-10 max-w-xl text-lg font-light leading-relaxed text-muted-foreground sm:text-xl">
@@ -188,7 +188,7 @@ export function LandingPage() {
                 {ctaText}
               </Link>
             </div>
-            <p className="mt-4 text-xs font-light tracking-wide text-muted-foreground/80">
+            <p className="mt-4 text-xs font-medium tracking-wide text-muted-foreground">
               ✦ {L.pricingTerms}
             </p>
           </div>
